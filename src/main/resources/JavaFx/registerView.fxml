@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.RegisterViewController">
+   <children>
+      <Button fx:id="btnRegister" layoutX="318.0" layoutY="305.0" mnemonicParsing="false" onAction="#actionRegister" prefHeight="44.0" prefWidth="106.0" text="REGISTER" />
+      <Button fx:id="btnReturn" layoutX="137.0" layoutY="305.0" mnemonicParsing="false" onAction="#actionLogin" prefHeight="44.0" prefWidth="106.0" text="RETURN" />
+      <PasswordField fx:id="textPassword" layoutX="202.0" layoutY="140.0" prefHeight="34.0" prefWidth="198.0" />
+      <TextField fx:id="textEmail" layoutX="201.0" layoutY="190.0" prefHeight="34.0" prefWidth="198.0" />
+      <TextField fx:id="textCode" layoutX="202.0" layoutY="241.0" prefHeight="34.0" prefWidth="198.0" />
+      <TextField fx:id="textAccount" layoutX="201.0" layoutY="91.0" prefHeight="34.0" prefWidth="198.0" />
+      <Label layoutX="99.0" layoutY="91.0" prefHeight="34.0" prefWidth="75.0" text="Account" />
+      <Label layoutX="99.0" layoutY="140.0" prefHeight="34.0" prefWidth="75.0" text="Password" />
+      <Label layoutX="99.0" layoutY="190.0" prefHeight="34.0" prefWidth="75.0" text="e-mail" />
+      <Label layoutX="99.0" layoutY="241.0" prefHeight="34.0" prefWidth="75.0" text="verif code" />
+      <Label fx:id="hint" layoutX="201.0" layoutY="41.0" prefHeight="34.0" prefWidth="224.0" textFill="RED" />
+      <Label fx:id="hint1" layoutX="424.0" layoutY="91.0" prefHeight="34.0" prefWidth="106.0" />
+   </children>
+</Pane>
