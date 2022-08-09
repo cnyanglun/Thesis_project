@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId><!-- TODO: the groupId of your project (e.g., hu.unideb.inf) --></groupId>
-    <artifactId><!-- TODO: the artifactId of your project --></artifactId>
+    <groupId>hu.unideb.inf</groupId>
+    <artifactId>homework-project-cnyanglun</artifactId>
     <version>1.0</version>
-    <description><!-- TODO: a short description of your project --></description>
+    <description>TODO: a short description of your project</description>
     <developers>
         <developer>
-            <id><!-- TODO: your ID --></id>
-            <name><!-- TODO: your name --></name>
-            <email><!-- TODO: your email address --></email>
+            <id>P80K9F</id>
+            <name>Yang Lun</name>
+            <email>724523660@qq.com</email>
             <organization>Faculty of Informatics, University of Debrecen</organization>
             <organizationUrl>https://www.inf.unideb.hu/</organizationUrl>
         </developer>
@@ -26,9 +26,24 @@
         <maven.checkstyle.version>3.1.2</maven.checkstyle.version>
         <maven.surefire.version>3.0.0-M6</maven.surefire.version>
         <jacoco.version>0.8.8</jacoco.version>
-        <exec.mainClass><!-- TODO: the main class of your application that contains the main method --></exec.mainClass>
+        <exec.mainClass>main</exec.mainClass>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>redis.clients</groupId>
+            <artifactId>jedis</artifactId>
+            <version>2.9.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.tinylog</groupId>
+            <artifactId>tinylog-api</artifactId>
+            <version>2.4.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.tinylog</groupId>
+            <artifactId>tinylog-impl</artifactId>
+            <version>2.4.1</version>
+        </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
@@ -52,6 +67,11 @@
             <artifactId>junit-jupiter-params</artifactId>
             <version>${junit.jupiter.version}</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.openjfx</groupId>
+            <artifactId>javafx-graphics</artifactId>
+            <version>18.0.1</version>
         </dependency>
     </dependencies>
     <build>

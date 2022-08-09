@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="536.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.ServerViewController">
+   <children>
+      <Pane prefHeight="131.0" prefWidth="302.0">
+         <children>
+            <Button layoutX="32.0" layoutY="86.0" mnemonicParsing="false" onAction="#startServer" prefHeight="31.0" prefWidth="99.0" text="Start Server" />
+            <Button layoutX="173.0" layoutY="86.0" mnemonicParsing="false" onAction="#turnOffServer" prefHeight="31.0" prefWidth="99.0" text="Turn off" />
+            <Label layoutX="70.0" layoutY="26.0" prefHeight="31.0" prefWidth="263.0" text="CHAT APPLICATION SERVER" />
+         </children>
+      </Pane>
+      <TableView layoutX="1.0" layoutY="131.0" prefHeight="405.0" prefWidth="300.0">
+        <columns>
+          <TableColumn prefWidth="100.0" text="ACCOUNT" />
+          <TableColumn prefWidth="100.0" text="PASSWORFD" />
+            <TableColumn prefWidth="100.0" text="LOGINTIME" />
+        </columns>
+      </TableView>
+   </children>
+</AnchorPane>
