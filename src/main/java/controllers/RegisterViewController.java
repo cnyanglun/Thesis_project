@@ -11,12 +11,15 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import model.clientUser;
 import org.tinylog.Logger;
-import redis.testRedis;
+import util.User;
+import util.registerInfo;
 
 
 import java.awt.*;
 import java.io.IOException;
+import java.lang.management.LockInfo;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -44,31 +47,25 @@ public class RegisterViewController implements Initializable {
     @FXML
     private TextField textCode;
 
-    testRedis redis;
+    registerInfo ri;
+
+    clientUser clientUser;
 
 
     @FXML
     void actionRegister(ActionEvent event) throws IOException, InterruptedException {
-        redis = new testRedis(textAccount.getText(),textPassword.getText(),textEmail.getText());
+        ri = new registerInfo(textAccount.getText(),textPassword.getText(),textEmail.getText());
+        clientUser = new clientUser();
         if(textAccount.getText().isEmpty() || textPassword.getText().isEmpty() || textEmail.getText().isEmpty()){
             Logger.info("The information is incomplete!");
-            hint.setText("The information is incomplete!");
         }
         else {
-            if(redis.isAccountExist()){
-                Logger.info("The account has existed");
-                hint1.setText("Invalid!");
+            if (clientUser.sendRegisterInfo(ri)) {
+                Logger.info("Success to create A new Account");
             }
-            else{
-                Logger.info("The account can be used!");
-                hint1.setText("Valid!");
-                redis.accountRegister();
-                goToLogin(event);
-            }
-
+            else
+                Logger.info("Failed to create a new Account");
         }
-//        Logger.info("Success to Register!!!");
-
     }
 
     @FXML

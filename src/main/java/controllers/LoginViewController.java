@@ -10,8 +10,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import model.clientUser;
 import org.tinylog.Logger;
-import redis.testRedis;
+import util.User;
 
 import java.io.IOException;
 
@@ -33,25 +34,27 @@ public class LoginViewController {
     @FXML
     private Button btnLogin;
 
-    testRedis redis;
+    User user;
+
+    clientUser clientUser;
 
     @FXML
     void actionLogin(ActionEvent event) throws IOException {
-        redis = new testRedis();
+        user = new User();
+        clientUser = new clientUser();
         if(textAccount.getText().isEmpty() || textPassword.getText().isEmpty()){
             Logger.info("The information is incomplete!");
         }
         else {
-            boolean isValidPassword = redis.accountLogin(textAccount.getText(),textPassword.getText());
+            user.setAccount(textAccount.getText());
+            user.setPassword(textPassword.getText());
+            boolean isValidPassword = clientUser.sendLoginInfo(user);
             if(isValidPassword){
                 root = FXMLLoader.load(getClass().getResource("/JavaFx/IndexView.fxml"));
                 stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
                 scene = new Scene(root);
                 stage.setScene(scene);
                 stage.show();
-            }
-            else{
-                Logger.info("The password is incorrect!");
             }
         }
     }
