@@ -1,14 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+<?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="controllers.IndexView"
-            prefHeight="400.0" prefWidth="600.0">
-
-</AnchorPane>
+<BorderPane fx:id="chatInterface" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.IndexView">
+   <left>
+      <BorderPane prefHeight="500.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <top>
+            <AnchorPane prefHeight="90.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+               <children>
+                  <ImageView fx:id="image" fitHeight="60.0" fitWidth="60.0" layoutX="14.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true" />
+                  <Label fx:id="nickname" layoutX="84.0" layoutY="41.0" prefHeight="34.0" prefWidth="106.0" text="Label" />
+                  <Label fx:id="accountId" layoutX="84.0" layoutY="15.0" prefHeight="34.0" prefWidth="106.0" text="Label" />
+               </children>
+            </AnchorPane>
+         </top>
+         <center>
+            <ScrollPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+         </center>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </BorderPane>
+   </left>
+   <center>
+      <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+         <top>
+            <AnchorPane prefHeight="50.0" prefWidth="550.0" BorderPane.alignment="CENTER">
+               <children>
+                  <Label fx:id="speakWith" layoutX="14.0" layoutY="8.0" prefHeight="37.0" prefWidth="230.0" text="Label" />
+               </children>
+            </AnchorPane>
+         </top>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+         <center>
+            <ScrollPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+               <content>
+                  <TextArea prefHeight="288.0" prefWidth="537.0" />
+               </content>
+            </ScrollPane>
+         </center>
+         <bottom>
+            <AnchorPane prefHeight="150.0" prefWidth="540.0" BorderPane.alignment="CENTER">
+               <children>
+                  <TextField layoutY="25.0" prefHeight="120.0" prefWidth="407.0" />
+                  <Button layoutX="418.0" layoutY="25.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="115.0" text="Button" />
+                  <Button layoutX="418.0" layoutY="95.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="115.0" text="Button" />
+               </children>
+            </AnchorPane>
+         </bottom>
+      </BorderPane>
+   </center>
+</BorderPane>
