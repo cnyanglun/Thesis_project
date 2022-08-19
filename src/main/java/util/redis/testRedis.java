@@ -2,6 +2,10 @@ package util.redis;
 
 import org.tinylog.Logger;
 import redis.clients.jedis.Jedis;
+import util.User;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class testRedis {
     private Jedis jedis;
@@ -56,27 +60,28 @@ public class testRedis {
     }
 
     public void accountRegister(String account,String password , String email){
-        if(jedis.exists("ID")){
-            if(!isAccountExist(account)){
-                var numOfUsers = Integer.parseInt(String.valueOf(jedis.scard("ID")));
-                id = String.valueOf(numOfUsers);
-                jedis.hset(account,account,password);
-                jedis.sadd("ID",id);
-                jedis.sadd(id,account,email);
+//        if(jedis.exists("account")){
+//            if(!isAccountExist(account)){
+//                var numOfUsers = Integer.parseInt(String.valueOf(jedis.scard("ID")));
+//                id = String.valueOf(numOfUsers);
+//                jedis.hset(account,account,password);
+//                jedis.sadd("ID",id);
+//                jedis.sadd(id,account,email);
+//
+//                jedis.sadd("Accounts",account);
+//                Logger.info("The account has been added to database!");
+//            }
+//        }
 
-                jedis.sadd("Accounts",account);
-                Logger.info("The account has been added to database!");
-            }
-        }
-        else {
-            jedis.sadd("ID","0");
-            accountRegister(account,password,email);
-        }
+        jedis.sadd("Accounts",account);
+        jedis.sadd(account,account + "_password",email,account + "_friendList");
+        jedis.hset(account + "_password",account,password);
+        Logger.info("The account has been added to database!");
     }
 
     public boolean accountLogin(String account ,String password){
         try{
-            if(jedis.hget(account,account).equals(password)){
+            if(jedis.hget(account + "_password",account).equals(password)){
                 return true;
             }
             else{
@@ -87,11 +92,25 @@ public class testRedis {
         }
     }
 
+    public User returnUserInfo(String account){
+        User user = new User();
+        user.setAccount(account);
+        List friendList = new ArrayList();
+        var set= jedis.smembers(account + "_friendList");
+        for (String element : set) {
+            friendList.add(element);
+        }
+        user.setFriendList(friendList);
+        return user;
+
+    }
+
+
 //    public static void main(String[] args) {
-//        testRedis test = new testRedis("a3","123","7245@qq.com");
-//        test.init();
-////        test.accountRegister();
-//        System.out.println(test.accountLogin("a3", "123"));
+//        testRedis t = new testRedis();
+//        User user = t.returnUserInfo("a1");
+//        System.out.println(user.getAccount());
+//        System.out.println(user.getFriendList());
 //    }
 
 
