@@ -10,7 +10,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 public class clientUser {
-    private Socket socket;
+    public static Socket socket;
 
     public User userInfo;
 
@@ -35,7 +35,9 @@ public class clientUser {
             if(message.getMesType().equals("loginSuccess")){
                 Logger.info("登录成功");
                 isSuccessLogin = true;
-//                userInfo = (User)ois.readObject();
+
+                ClientConServerThread clientConServerThread = new ClientConServerThread(socket);
+                clientConServerThread.start();
             } else if (message.getMesType().equals("loginFailed")) {
                 Logger.info("登录失败");
                 isSuccessLogin = false;
@@ -77,23 +79,6 @@ public class clientUser {
         }
 
         return isSuccessLogin;
-    }
-
-    public User getUserInfo(){
-        try {
-//            ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-//            Message message = new Message();
-//            message.setMesType("userInfo");
-//            oos.writeObject(message);
-
-            ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
-            User userInfo = (User)ois.readObject();
-            return userInfo;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 }

@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
 
-<BorderPane fx:id="chatInterface" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.IndexView">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.IndexView">
    <left>
       <BorderPane prefHeight="500.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <top>
@@ -18,7 +23,10 @@
             </AnchorPane>
          </top>
          <center>
-            <ScrollPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+            <ScrollPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+               <content>
+                  <VBox fx:id="friendList" prefHeight="396.0" prefWidth="185.0" />
+               </content></ScrollPane>
          </center>
          <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
@@ -26,11 +34,11 @@
       </BorderPane>
    </left>
    <center>
-      <BorderPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <BorderPane fx:id="chatInterface" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <top>
             <AnchorPane prefHeight="50.0" prefWidth="550.0" BorderPane.alignment="CENTER">
                <children>
-                  <Label fx:id="speakWith" layoutX="14.0" layoutY="8.0" prefHeight="37.0" prefWidth="230.0" text="Label" />
+                  <Label fx:id="speakWith" layoutX="14.0" layoutY="8.0" prefHeight="37.0" prefWidth="230.0" />
                </children>
             </AnchorPane>
          </top>
@@ -38,18 +46,21 @@
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </padding>
          <center>
-            <ScrollPane prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <ScrollPane fx:id="sp" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                <content>
-                  <TextArea prefHeight="288.0" prefWidth="537.0" />
+                  <TextArea fx:id="displayText" prefHeight="288.0" prefWidth="537.0">
+                     <padding>
+                        <Insets bottom="10.0" left="30.0" right="30.0" top="10.0" />
+                     </padding></TextArea>
                </content>
             </ScrollPane>
          </center>
          <bottom>
             <AnchorPane prefHeight="150.0" prefWidth="540.0" BorderPane.alignment="CENTER">
                <children>
-                  <TextField layoutY="25.0" prefHeight="120.0" prefWidth="407.0" />
-                  <Button layoutX="418.0" layoutY="25.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="115.0" text="Button" />
-                  <Button layoutX="418.0" layoutY="95.0" mnemonicParsing="false" prefHeight="50.0" prefWidth="115.0" text="Button" />
+                  <TextArea fx:id="inputText" layoutY="25.0" prefHeight="120.0" prefWidth="407.0" />
+                  <Button layoutX="418.0" layoutY="25.0" mnemonicParsing="false" onAction="#send" prefHeight="50.0" prefWidth="115.0" text="SEND" />
+                  <Button layoutX="418.0" layoutY="95.0" mnemonicParsing="false" onAction="#clearAll" prefHeight="50.0" prefWidth="115.0" text="CLEAR" />
                </children>
             </AnchorPane>
          </bottom>
