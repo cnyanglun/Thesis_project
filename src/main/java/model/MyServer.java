@@ -61,7 +61,6 @@ public class MyServer implements Runnable{
                 ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
                 Message message = new Message();
                 Object o = ois.readObject();
-                System.out.println("11111");
 
 
 //                if(o instanceof Message){
@@ -75,10 +74,12 @@ public class MyServer implements Runnable{
                     if (isLoginSuccess(o)) {
                         message.setMesType("loginSuccess");
                         oos.writeObject(message);
+                        Logger.info("User " + account + " is online!");
 
-//                        Thread clientThread = new Thread(new clientManageThread(socket,account));
-//                        clientThread.setName(account + "_Thread");
-//                        clientThread.start();
+                        SerConClientThread serConClientThread = new SerConClientThread(socket,account);
+                        manageClientThread.addClientThread(account,serConClientThread);
+                        serConClientThread.start();
+
                     }
                     else {
                         message.setMesType("loginFailed");
@@ -86,7 +87,6 @@ public class MyServer implements Runnable{
                         socket.close();
                     }
                 } else if (o instanceof registerInfo) {
-                    System.out.println("122222");
                     if(isRegisterSuccess(o)){
                         message.setMesType("registerSuccess");
                         oos.writeObject(message);

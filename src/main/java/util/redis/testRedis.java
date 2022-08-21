@@ -20,7 +20,6 @@ public class testRedis {
 
     public void setJedis(){
         jedis = new Jedis("127.0.0.1", 6379);
-        System.out.println("Success to bind!!!");
     }
 
     public void testJedis(){
@@ -60,18 +59,6 @@ public class testRedis {
     }
 
     public void accountRegister(String account,String password , String email){
-//        if(jedis.exists("account")){
-//            if(!isAccountExist(account)){
-//                var numOfUsers = Integer.parseInt(String.valueOf(jedis.scard("ID")));
-//                id = String.valueOf(numOfUsers);
-//                jedis.hset(account,account,password);
-//                jedis.sadd("ID",id);
-//                jedis.sadd(id,account,email);
-//
-//                jedis.sadd("Accounts",account);
-//                Logger.info("The account has been added to database!");
-//            }
-//        }
 
         jedis.sadd("Accounts",account);
         jedis.sadd(account,account + "_password",email,account + "_friendList");
@@ -109,7 +96,6 @@ public class testRedis {
 //    public static void main(String[] args) {
 //        testRedis t = new testRedis();
 //        User user = t.returnUserInfo("a1");
-//        System.out.println(user.getAccount());
 //        System.out.println(user.getFriendList());
 //    }
 
