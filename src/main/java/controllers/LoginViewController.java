@@ -35,7 +35,6 @@ public class LoginViewController {
     private Button btnLogin;
 
     User user;
-
     clientUser clientUser;
 
     @FXML
@@ -50,9 +49,10 @@ public class LoginViewController {
             user.setPassword(textPassword.getText());
             boolean isValidPassword = clientUser.sendLoginInfo(user);
             if(isValidPassword){
-                root = FXMLLoader.load(getClass().getResource("/JavaFx/IndexView.fxml"));
+                FXMLLoader root = new FXMLLoader(getClass().getResource("/JavaFx/IndexView.fxml"));
+//                root = FXMLLoader.load(getClass().getResource("/JavaFx/IndexView.fxml"));
                 stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
-                scene = new Scene(root);
+                scene = new Scene(root.load());
                 stage.setScene(scene);
                 stage.show();
             }

@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.IndexView">
+<BorderPane fx:id="win" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="750.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.IndexView">
    <left>
       <BorderPane prefHeight="500.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <top>
@@ -35,13 +35,6 @@
    </left>
    <center>
       <BorderPane fx:id="chatInterface" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-         <top>
-            <AnchorPane prefHeight="50.0" prefWidth="550.0" BorderPane.alignment="CENTER">
-               <children>
-                  <Label fx:id="speakWith" layoutX="14.0" layoutY="8.0" prefHeight="37.0" prefWidth="230.0" />
-               </children>
-            </AnchorPane>
-         </top>
          <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </padding>
@@ -56,7 +49,7 @@
             </ScrollPane>
          </center>
          <bottom>
-            <AnchorPane prefHeight="150.0" prefWidth="540.0" BorderPane.alignment="CENTER">
+            <AnchorPane fx:id="ap" prefHeight="150.0" prefWidth="540.0" BorderPane.alignment="CENTER">
                <children>
                   <TextArea fx:id="inputText" layoutY="25.0" prefHeight="120.0" prefWidth="407.0" />
                   <Button layoutX="418.0" layoutY="25.0" mnemonicParsing="false" onAction="#send" prefHeight="50.0" prefWidth="115.0" text="SEND" />
@@ -66,4 +59,14 @@
          </bottom>
       </BorderPane>
    </center>
+   <top>
+      <AnchorPane fx:id="functionBar" prefHeight="50.0" prefWidth="550.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label fx:id="speakWith" layoutX="14.0" layoutY="8.0" prefHeight="37.0" prefWidth="230.0" />
+            <ImageView fx:id="turnOff" fitHeight="30.0" fitWidth="30.0" layoutX="496.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="addFriend" fitHeight="30.0" fitWidth="30.0" layoutX="461.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="createGroup" fitHeight="30.0" fitWidth="30.0" layoutX="426.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true" />
+         </children>
+      </AnchorPane>
+   </top>
 </BorderPane>

@@ -1,5 +1,6 @@
 package model;
 
+import org.springframework.stereotype.Component;
 import org.tinylog.Logger;
 import util.Message;
 import util.User;
@@ -8,6 +9,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.HashMap;
 
 public class clientUser {
     public static Socket socket;

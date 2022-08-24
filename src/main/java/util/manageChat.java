@@ -1,8 +1,9 @@
 package util;
 
 import javafx.scene.control.TextArea;
+import javafx.scene.layout.AnchorPane;
 
-import java.util.HashMap;
+import java.util.*;
 
 public class manageChat {
     private static HashMap<String, TextArea> hm = new HashMap<>();
@@ -16,4 +17,5 @@ public class manageChat {
     {
         return (TextArea) hm.get(accountId);
     }
+
 }
