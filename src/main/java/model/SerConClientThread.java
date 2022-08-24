@@ -1,20 +1,23 @@
 package model;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.tinylog.Logger;
 import util.Message;
-import util.redis.testRedis;
+import util.User;
+import dao.testRedis;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-
 public class SerConClientThread extends Thread{
 
     private Socket socket;
     private String account;
 
+//    testRedis redis;
     testRedis redis = new testRedis();
 
 
@@ -40,6 +43,24 @@ public class SerConClientThread extends Thread{
                     ObjectOutputStream oos1 = new ObjectOutputStream(clientThread.socket.getOutputStream());
                     oos1.writeObject(message);
                     Logger.info("The message has been transfer to " + message.getGetter() + "from " + message.getSender());
+                } else if (message.getMesType().equals("add_Friend")) {
+                    //The user who should be added
+                    String getter = message.getGetter();
+                    if (redis.isAccountExist(getter)){
+                        User friendInfo = new User();
+                        friendInfo.setAccount(getter);
+
+                        Message friendInfo1 = new Message();
+                        friendInfo1.setUserInfo(friendInfo);
+                        friendInfo1.setMesType("add_Friend");
+
+                        SerConClientThread clientThread = manageClientThread.getClientThread(message.getSender());
+                        ObjectOutputStream oos2 = new ObjectOutputStream(clientThread.socket.getOutputStream());
+                        oos2.writeObject(friendInfo1);
+
+                    }else {
+
+                    }
                 }
             }
 

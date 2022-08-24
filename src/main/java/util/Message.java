@@ -6,6 +6,15 @@ public class Message implements java.io.Serializable{
     private String getter;
     private String con;
     private String sendTime;
+    private User userInfo;
+
+    public User getUserInfo() {
+        return userInfo;
+    }
+
+    public void setUserInfo(User userInfo) {
+        this.userInfo = userInfo;
+    }
 
     public String getMesType() {
         return mesType;

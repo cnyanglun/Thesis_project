@@ -1,10 +1,13 @@
 package model;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.tinylog.Logger;
 import util.Message;
 import util.User;
-import util.redis.testRedis;
+import dao.testRedis;
 import util.registerInfo;
 
 import java.io.IOException;
@@ -12,11 +15,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-
 public class MyServer implements Runnable{
 
     private boolean isThreadFinish = false;
 
+//    testRedis redis;
     testRedis redis = new testRedis();
 
     private String account;

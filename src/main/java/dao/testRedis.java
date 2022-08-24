@@ -1,12 +1,13 @@
-package util.redis;
+package dao;
 
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import org.tinylog.Logger;
 import redis.clients.jedis.Jedis;
 import util.User;
 
 import java.util.ArrayList;
 import java.util.List;
-
 public class testRedis {
     private Jedis jedis;
 
@@ -20,12 +21,6 @@ public class testRedis {
 
     public void setJedis(){
         jedis = new Jedis("127.0.0.1", 6379);
-    }
-
-    public void testJedis(){
-        jedis.set("n1","yanglun");
-        var n1 = jedis.get("n1");
-        System.out.println(n1);
     }
 
 
@@ -89,8 +84,8 @@ public class testRedis {
         }
         user.setFriendList(friendList);
         return user;
-
     }
+
 
 
 //    public static void main(String[] args) {
