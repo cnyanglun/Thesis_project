@@ -1,6 +1,5 @@
 package model;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tinylog.Logger;
 import util.Message;
@@ -12,11 +11,12 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+@Service
 public class SerConClientThread extends Thread{
 
     private Socket socket;
     private String account;
-
+//    @Autowired
 //    testRedis redis;
     testRedis redis = new testRedis();
 
@@ -43,7 +43,7 @@ public class SerConClientThread extends Thread{
                     ObjectOutputStream oos1 = new ObjectOutputStream(clientThread.socket.getOutputStream());
                     oos1.writeObject(message);
                     Logger.info("The message has been transfer to " + message.getGetter() + "from " + message.getSender());
-                } else if (message.getMesType().equals("add_Friend")) {
+                } else if (message.getMesType().equals("search_Friend")) {
                     //The user who should be added
                     String getter = message.getGetter();
                     if (redis.isAccountExist(getter)){
@@ -52,7 +52,7 @@ public class SerConClientThread extends Thread{
 
                         Message friendInfo1 = new Message();
                         friendInfo1.setUserInfo(friendInfo);
-                        friendInfo1.setMesType("add_Friend");
+                        friendInfo1.setMesType("search_Friend");
 
                         SerConClientThread clientThread = manageClientThread.getClientThread(message.getSender());
                         ObjectOutputStream oos2 = new ObjectOutputStream(clientThread.socket.getOutputStream());
@@ -61,6 +61,24 @@ public class SerConClientThread extends Thread{
                     }else {
 
                     }
+                } else if (message.getMesType().equals("add_Friend")) {
+                    String isAddSuccess = redis.addFriend(message.getSender(),message.getGetter());
+                    Message message1 = new Message();
+                    message1.setMesType("add_Result");
+                    message1.setCon(isAddSuccess);
+
+                    SerConClientThread clientThread = manageClientThread.getClientThread(message.getSender());
+                    ObjectOutputStream oos3 = new ObjectOutputStream(clientThread.socket.getOutputStream());
+                    oos3.writeObject(message1);
+                } else if (message.getMesType().equals("change_NewName")) {
+                    String result = redis.changeName(message.getSender(), message.getCon());
+                    Message message1 = new Message();
+                    message1.setMesType("change_Result");
+                    message1.setCon(result);
+
+                    SerConClientThread clientThread = manageClientThread.getClientThread(message.getSender());
+                    ObjectOutputStream oos4 = new ObjectOutputStream(clientThread.socket.getOutputStream());
+                    oos4.writeObject(message1);
                 }
             }
 

@@ -8,16 +8,9 @@ import util.User;
 
 import java.util.ArrayList;
 import java.util.List;
+@Repository
 public class testRedis {
     private Jedis jedis;
-
-    private String account;
-
-    private String password;
-
-    private String email;
-
-    private String id;
 
     public void setJedis(){
         jedis = new Jedis("127.0.0.1", 6379);
@@ -25,14 +18,6 @@ public class testRedis {
 
 
     public testRedis() {
-        setJedis();
-        init();
-    }
-
-    public testRedis(String account, String password, String email) {
-        this.account = account;
-        this.password = password;
-        this.email = email;
         setJedis();
         init();
     }
@@ -56,7 +41,7 @@ public class testRedis {
     public void accountRegister(String account,String password , String email){
 
         jedis.sadd("Accounts",account);
-        jedis.sadd(account,account + "_password",email,account + "_friendList");
+        jedis.sadd(account,account + "_password",email,account + "_friendList",account + "_nickname");
         jedis.hset(account + "_password",account,password);
         Logger.info("The account has been added to database!");
     }
@@ -86,12 +71,26 @@ public class testRedis {
         return user;
     }
 
+    public String addFriend(String senderId, String getterId){
+
+        var a =jedis.sadd(senderId + "_friendList",getterId);
+        var b = jedis.sadd(getterId + "_friendList",senderId);
+        Logger.info("Success to add Friend");
+        if (a == 1 && b ==1)
+            return "OK";
+        return "NO  ";
+    }
+
+    public String changeName(String senderId , String newName){
+        String result = jedis.set(senderId + "_nickname", newName);
+        return result;
+    }
+
 
 
 //    public static void main(String[] args) {
 //        testRedis t = new testRedis();
-//        User user = t.returnUserInfo("a1");
-//        System.out.println(user.getFriendList());
+//        t.changeName("a1","Yanglun");
 //    }
 
 

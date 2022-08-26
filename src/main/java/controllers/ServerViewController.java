@@ -9,7 +9,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Controller;
 
 public class ServerViewController {
-
+    @Autowired
     MyServer server;
     Thread thread1;
 
