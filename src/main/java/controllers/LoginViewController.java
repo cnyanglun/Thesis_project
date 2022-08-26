@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 import model.clientUser;
 import org.tinylog.Logger;
 import util.User;
+import util.tool.manageObject;
 
 import java.io.IOException;
 
@@ -41,6 +42,7 @@ public class LoginViewController {
     void actionLogin(ActionEvent event) throws IOException {
         user = new User();
         clientUser = new clientUser();
+        manageObject.addObject("clientUser",user);
         if(textAccount.getText().isEmpty() || textPassword.getText().isEmpty()){
             Logger.info("The information is incomplete!");
         }
@@ -49,10 +51,13 @@ public class LoginViewController {
             user.setPassword(textPassword.getText());
             boolean isValidPassword = clientUser.sendLoginInfo(user);
             if(isValidPassword){
-                FXMLLoader root = new FXMLLoader(getClass().getResource("/JavaFx/IndexView.fxml"));
+                FXMLLoader Loader = new FXMLLoader(getClass().getResource("/JavaFx/IndexView.fxml"));
+                root = Loader.load();
+                IndexView IndexController = Loader.getController();
+                manageObject.addObject("indexView",IndexController);
 //                root = FXMLLoader.load(getClass().getResource("/JavaFx/IndexView.fxml"));
                 stage = (Stage) ((Node)event.getSource()).getScene().getWindow();
-                scene = new Scene(root.load());
+                scene = new Scene(root);
                 stage.setScene(scene);
                 stage.show();
             }

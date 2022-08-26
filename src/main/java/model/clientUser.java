@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import org.tinylog.Logger;
 import util.Message;
 import util.User;
+import util.tool.manageObject;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -39,6 +40,7 @@ public class clientUser {
                 isSuccessLogin = true;
 
                 ClientConServerThread clientConServerThread = new ClientConServerThread(socket);
+                manageObject.addObject("clientConServerThread",clientConServerThread);
                 clientConServerThread.start();
             } else if (message.getMesType().equals("loginFailed")) {
                 Logger.info("登录失败");

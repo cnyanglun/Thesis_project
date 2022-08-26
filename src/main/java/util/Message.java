@@ -7,6 +7,15 @@ public class Message implements java.io.Serializable{
     private String con;
     private String sendTime;
     private User userInfo;
+    private boolean isSuccess;
+
+    public boolean isSuccess() {
+        return isSuccess;
+    }
+
+    public void setSuccess(boolean success) {
+        isSuccess = success;
+    }
 
     public User getUserInfo() {
         return userInfo;

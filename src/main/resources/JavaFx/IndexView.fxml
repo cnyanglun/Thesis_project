@@ -14,10 +14,10 @@
    <left>
       <BorderPane prefHeight="500.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <top>
-            <AnchorPane prefHeight="90.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <AnchorPane fx:id="accountInfo" prefHeight="90.0" prefWidth="200.0" BorderPane.alignment="CENTER">
                <children>
-                  <ImageView fx:id="image" fitHeight="60.0" fitWidth="60.0" layoutX="14.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true" />
-                  <Label fx:id="nickname" layoutX="84.0" layoutY="41.0" prefHeight="34.0" prefWidth="106.0" text="Label" />
+                  <ImageView fx:id="yourAvatar" fitHeight="60.0" fitWidth="60.0" layoutX="14.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true" />
+                  <Label fx:id="nickName" layoutX="84.0" layoutY="41.0" prefHeight="34.0" prefWidth="106.0" text="Label" />
                   <Label fx:id="accountId" layoutX="84.0" layoutY="15.0" prefHeight="34.0" prefWidth="106.0" text="Label" />
                </children>
             </AnchorPane>
