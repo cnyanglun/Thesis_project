@@ -66,7 +66,8 @@ public class MyServer implements Runnable{
                 Socket socket = ss.accept();
                 ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
                 ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-                Message message = new Message();
+//                Message message = new Message();
+                Message message = Message.builder().build();
                 Object o = ois.readObject();
 
 

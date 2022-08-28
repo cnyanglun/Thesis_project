@@ -1,5 +1,8 @@
 package util;
 
+import lombok.Builder;
+
+@Builder
 public class Message implements java.io.Serializable{
     private String mesType;
     private String sender;
@@ -8,7 +11,6 @@ public class Message implements java.io.Serializable{
     private String sendTime;
     private User userInfo;
     private boolean isSuccess;
-
     public boolean isSuccess() {
         return isSuccess;
     }
@@ -63,5 +65,18 @@ public class Message implements java.io.Serializable{
 
     public void setSendTime(String sendTime) {
         this.sendTime = sendTime;
+    }
+
+    @Override
+    public String toString() {
+        return "Message{" +
+                "mesType='" + mesType + '\'' +
+                ", sender='" + sender + '\'' +
+                ", getter='" + getter + '\'' +
+                ", con='" + con + '\'' +
+                ", sendTime='" + sendTime + '\'' +
+                ", userInfo=" + userInfo +
+                ", isSuccess=" + isSuccess +
+                '}';
     }
 }
