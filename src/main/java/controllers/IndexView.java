@@ -3,15 +3,21 @@ package controllers;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import lombok.SneakyThrows;
 import model.ClientConServerThread;
 import model.clientUser;
 import org.tinylog.Logger;
@@ -20,13 +26,9 @@ import util.User;
 import util.tool.manageObject;
 
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.ResourceBundle;
+import java.util.*;
 
 
 public class IndexView implements Initializable{
@@ -63,6 +65,7 @@ public class IndexView implements Initializable{
     private BorderPane win;
     @FXML
     private AnchorPane accountInfo;
+//    private HashMap<String,Integer> friendUnreadMap = new HashMap<>();
 
     private Stage stage;
 
@@ -91,10 +94,15 @@ public class IndexView implements Initializable{
         turnOffFunction();
         userInfoModify();
     }
-
     private void init(){
-        userInfo = ClientConServerThread.user;
-        accountId.setText(userInfo.getAccount());
+        try {
+            userInfo = ClientConServerThread.user;
+            accountId.setText(userInfo.getAccount());
+            nickName.setText(userInfo.getNickName());
+            yourAvatar.setImage(new Image(userInfo.getImageUrl(),60,60,false,false));
+        }catch (NullPointerException e){
+            Logger.info("Your information is not perfect");
+        }
 
         ClientConServerThread clientConServerThread = (ClientConServerThread) manageObject.getObject("clientConServerThread");
         ccst = clientConServerThread;
@@ -114,6 +122,7 @@ public class IndexView implements Initializable{
                 Label changeName = new Label("CHANGE NAME");
                 Label changeAvatar = new Label("CHANGE AVATAR");
 
+                //Change name Function
                 changeName.setOnMouseClicked(new EventHandler<MouseEvent>() {
                     @Override
                     public void handle(MouseEvent mouseEvent) {
@@ -135,10 +144,10 @@ public class IndexView implements Initializable{
                                 String newNameText = newName.getText();
 
                                 try {
-                                    Message changeNewName = new Message();
-                                    changeNewName.setSender(userInfo.getAccount());
-                                    changeNewName.setMesType("change_NewName");
-                                    changeNewName.setCon(newNameText);
+                                    Message changeNewName = Message.builder()
+                                            .sender(userInfo.getAccount())
+                                            .mesType("change_NewName")
+                                            .con(newNameText).build();
 
                                     ccst.sendToServer(changeNewName);
 
@@ -157,6 +166,7 @@ public class IndexView implements Initializable{
                     }
                 });
 
+                //Change avatar function
                 changeAvatar.setOnMouseClicked(new EventHandler<MouseEvent>() {
                     @Override
                     public void handle(MouseEvent mouseEvent) {
@@ -164,6 +174,7 @@ public class IndexView implements Initializable{
                         changeAvatar.setSpacing(20);
                         changeAvatar.setAlignment(Pos.CENTER);
                         Button change = new Button("CHANGE");
+                        Label changeResult = new Label();
                         FlowPane imageList = new FlowPane();
                         imageList.resize(300,450);
                         imageList.setMaxWidth(300);
@@ -189,11 +200,29 @@ public class IndexView implements Initializable{
                         change.setOnMouseClicked(new EventHandler<MouseEvent>() {
                             @Override
                             public void handle(MouseEvent mouseEvent) {
-                                System.out.println(url);
+                                Message change_avatars = Message.builder()
+                                        .mesType("change_Avatar")
+                                        .sender(userInfo.getAccount())
+                                        .con(url).build();
+
+                                ccst.sendToServer(change_avatars);
+
+                                try {
+                                    Thread.sleep(1000*60);
+                                } catch (InterruptedException e) {
+
+                                }
+
+                                if(isOk){
+                                    changeResult.setText("Success to Change");
+                                }else
+                                    changeResult.setText("Failed to Change");
+
                             }
                         });
 
-                        changeAvatar.getChildren().addAll(change,imageList);
+
+                        changeAvatar.getChildren().addAll(change,imageList,changeResult);
                         win.setCenter(changeAvatar);
                     }
                 });
@@ -212,10 +241,11 @@ public class IndexView implements Initializable{
         var list = userInfo.getFriendList();
         Iterator iterator = list.iterator();
         while (iterator.hasNext()){
-            String friendId = (String) iterator.next();
+            User friendObject = (User)iterator.next();
+            String friendId = friendObject.getAccount();
 
             createChat(friendId);
-            HBox friend = createFriend(friendId);
+            HBox friend = createFriend(friendObject);
 
             friendList.getChildren().add(friend);
             friendList.setSpacing(5);
@@ -225,22 +255,56 @@ public class IndexView implements Initializable{
 
     public void createChat(String friendId){
         TextArea chat = new TextArea();
+        chat.setEditable(false);
         chat.setPrefSize(537,288);
+
+        //load chat Record
+        for (User friend : userInfo.getFriendList()) {
+            if(friend.getAccount().equals(friendId)){
+//                int count = 0;
+                for (Message message : friend.getChatRecord()) {
+                    chat.appendText(accountId.getText() + " say: \n");
+                    chat.appendText(message.getCon() + "\n");
+                    chat.appendText("\n");
+
+//                    if(message.isUnread()){
+//                        System.out.println(message.isUnread());
+//                        count++;
+//                    }
+                }
+//                friendUnreadMap.put(friendId,count);
+            }
+        }
+
         manageObject.addChat(friendId,chat);
     }
 
-    private HBox createFriend(String friendId){
+    private HBox createFriend(User friendObject){
+        String friendId = friendObject.getAccount();
+
         Label friendAccountId = new Label("label");
-        friendAccountId.setText(friendId);
         Label friendName = new Label("label");
+//        Label unreadCount = new Label();
+
+//        Integer count = friendUnreadMap.get(friendId);
+//        unreadCount.setText(count.toString());
 
         VBox friendInfo = new VBox();
 
         friendInfo.getChildren().addAll(friendAccountId,friendName);
         friendInfo.setPadding(new Insets(5));
-        friendInfo.setSpacing(20);
+        friendInfo.setSpacing(8);
 
-        ImageView image = new ImageView(new Image("/image/image.jpg",60,60,false,false));
+        ImageView image;
+        try {
+            friendAccountId.setText(friendId);
+            image = new ImageView(new Image(friendObject.getImageUrl(), 60, 60, false, false));
+            friendName.setText(friendObject.getNickName());
+        }catch (NullPointerException e){
+            image = new ImageView(new Image("/image/image.jpg",60,60,false,false));
+            friendName.setText("");
+        }
+
         image.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
@@ -259,12 +323,6 @@ public class IndexView implements Initializable{
 
         friend.getChildren().addAll(image,friendInfo);
         return friend;
-    }
-
-    private void addFriendToFriendList(String friendId){
-        createChat(friendId);
-        HBox friend = createFriend(friendId);
-        friendList.getChildren().add(friend);
     }
 
     private void addFriendFunction(){
@@ -291,10 +349,14 @@ public class IndexView implements Initializable{
                     @Override
                     public void handle(MouseEvent mouseEvent) {
                         if (!InputFriendName.getText().isEmpty()){
-                            Message message = new Message();
-                            message.setSender(userInfo.getAccount());
-                            message.setGetter(InputFriendName.getText());
-                            message.setMesType("search_Friend");
+                            Message message = Message.builder()
+                                    .sender(userInfo.getAccount())
+                                    .getter(InputFriendName.getText())
+                                    .mesType("search_Friend").build();
+//                            Message message = new Message();
+//                            message.setSender(userInfo.getAccount());
+//                            message.setGetter(InputFriendName.getText());
+//                            message.setMesType("search_Friend");
 
 
 
@@ -324,11 +386,13 @@ public class IndexView implements Initializable{
                             addbtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
                                 @Override
                                 public void handle(MouseEvent mouseEvent) {
-                                    Message message1 = new Message();
-                                    message1.setMesType("add_Friend");
-                                    message1.setSender(userInfo.getAccount());
+
                                     String friendId = InputFriendName.getText();
-                                    message1.setGetter(friendId);
+
+                                    Message message1 = Message.builder()
+                                            .sender(userInfo.getAccount())
+                                            .mesType("add_Friend")
+                                            .getter(friendId).build();
 
                                     ccst.sendToServer(message1);
 
@@ -346,15 +410,14 @@ public class IndexView implements Initializable{
                                         result.setText("Success to Add");
 
                                         //Create new friend and put it into friendList after adding friend
-                                        addFriendToFriendList(friendId);
+//                                        addFriendToFriendList(friendId);
                                     }else {
                                         Logger.info("Failed to add");
                                         result.setText("Failed to add");
                                     }
 
-
-
-                                    }
+                                    refresh();
+                                }
                                 });
 
                                 displayResult.getChildren().addAll(addbtn,friend);
@@ -383,8 +446,15 @@ public class IndexView implements Initializable{
             @Override
             public void handle(MouseEvent mouseEvent) {
                 Platform.exit();
-//                var ccst = (ClientConServerThread)manageObject.getObject("clientConServerThread");
-//                ccst.setThreadSwitch(false);
+                try {
+                    Message exitMessage = Message.builder()
+                                    .mesType("exit_Message").build();
+                    ccst.sendToServer(exitMessage);
+
+                    clientUser.socket.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
     }
@@ -403,12 +473,13 @@ public class IndexView implements Initializable{
     private void send(){
         if(!inputText.getText().isEmpty()){
             String content = inputText.getText();
-            Message commonMessage = new Message();
 
-            commonMessage.setMesType("common_Message");
-            commonMessage.setSender(userInfo.getAccount());
-            commonMessage.setGetter(friendId1);
-            commonMessage.setCon(content);
+            Message commonMessage = Message.builder()
+                    .mesType("common_Message")
+                    .sender(userInfo.getAccount())
+                    .getter(friendId1)
+                    .con(content).build();
+
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss a");
             String time = sdf.format(new Date());
             commonMessage.setSendTime(time);
@@ -422,6 +493,18 @@ public class IndexView implements Initializable{
             displayText.appendText(content + "\n");
             displayText.appendText("\n");
         }
+    }
+
+    @SneakyThrows
+    private void refresh(){
+        FXMLLoader Loader = new FXMLLoader(getClass().getResource("/JavaFx/IndexView.fxml"));
+        Parent root = Loader.load();
+        IndexView IndexController = Loader.getController();
+        manageObject.addObject("indexView",IndexController);
+        stage = (Stage) ((Node)friendList).getScene().getWindow();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.show();
     }
 
     public void setIsOk(boolean a){

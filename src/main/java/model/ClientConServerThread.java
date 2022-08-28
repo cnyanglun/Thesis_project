@@ -11,9 +11,11 @@ import util.tool.manageObject;
 import util.tool.thread;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 
 public class ClientConServerThread extends Thread{
 
@@ -25,11 +27,11 @@ public class ClientConServerThread extends Thread{
         this.socket = socket;
     }
 
-    private boolean threadSwitch = true;
+    private int count = 0;
 
     @Override
     public void run() {
-        while(threadSwitch){
+        while(true){
             try {
                 ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
                 Object o = ois.readObject();
@@ -41,7 +43,6 @@ public class ClientConServerThread extends Thread{
                     if (message.getMesType().equals("common_Message")){
                         String sender = message.getSender();
                         TextArea chat = manageObject.getChat(sender);
-//                        System.out.println(message.getCon());
                         chat.appendText(sender + " say: \n");
                         chat.appendText(message.getCon() + "\n" + "\n");
 
@@ -51,13 +52,11 @@ public class ClientConServerThread extends Thread{
 
                         AnchorPane inquireResult = (AnchorPane)manageObject.getObject("inquireResult");
                         Label friendId = (Label) inquireResult.getChildren().get(1);
-//                        Label friendId = (Label)IndexView.inquireResult.getChildren().get(1);
 
                         //To avoid no fx Thread Exception
                         Platform.runLater(new Runnable() {
                             @Override
                             public void run() {
-                                //更新JavaFX的主线程的代码放在此处
                                 friendId.setText(account);
                             }
                         });
@@ -66,10 +65,6 @@ public class ClientConServerThread extends Thread{
                         IndexView indexView = (IndexView)manageObject.getObject("indexView");
                         Thread indexThread = thread.getThreadByName("JavaFX Application Thread");
 
-
-//                        IndexView indexView = (IndexView)manageObject.getObject("indexView");
-
-//                        Logger.info(message.getCon());
                         if(message.getCon().equals("OK")){
                             indexView.setIsOk(true);
                         }
@@ -90,21 +85,29 @@ public class ClientConServerThread extends Thread{
 
                         indexThread.interrupt();
                         System.out.println("success to change name");
+                    } else if (message.getMesType().equals("change_Avatar_Result")) {
+                        IndexView indexView = (IndexView)manageObject.getObject("indexView");
+                        Thread indexThread = thread.getThreadByName("JavaFX Application Thread");
+                        if(message.getCon().equals("OK")){
+                            indexView.setIsOk(true);
+                        }else
+                            indexView.setIsOk(false);
+
+                        indexThread.interrupt();
+                        System.out.println("success to change Avatar");
                     }
                 }
 
                 
                 
+            } catch (SocketException e){
+                break;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
         }
-    }
-
-    public void setThreadSwitch(boolean threadSwitch) {
-        this.threadSwitch = threadSwitch;
     }
 
     public void sendToServer(Message message){

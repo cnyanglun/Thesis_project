@@ -9,15 +9,43 @@ public class User implements java.io.Serializable{
     private String password;
 
     private String nickName;
+    private String imageUrl;
+//    private int unreadCount;
 
-    private List friendList = new ArrayList();
+    private ArrayList<Message> chatRecord;
 
-    public List getFriendList() {
+    private List<User> friendList = new ArrayList();
+
+//    public int getUnreadCount() {
+//        return unreadCount;
+//    }
+//
+//    public void setUnreadCount(int unreadCount) {
+//        this.unreadCount = unreadCount;
+//    }
+
+    public List<User> getFriendList() {
         return friendList;
     }
 
-    public void setFriendList(List friendList) {
+    public void setFriendList(List<User> friendList) {
         this.friendList = friendList;
+    }
+
+    public ArrayList<Message> getChatRecord() {
+        return chatRecord;
+    }
+
+    public void setChatRecord(ArrayList<Message> chatRecord) {
+        this.chatRecord = chatRecord;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public String getNickName() {
