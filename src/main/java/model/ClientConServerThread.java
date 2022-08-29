@@ -46,6 +46,20 @@ public class ClientConServerThread extends Thread{
                         chat.appendText(sender + " say: \n");
                         chat.appendText(message.getCon() + "\n" + "\n");
 
+                        Label unread = manageObject.getLabel(message.getSender());
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                String text = unread.getText();
+                                if(text.equals(" "))
+                                    unread.setText("1");
+                                else {
+                                    int num = Integer.parseInt(text) + 1;
+                                    unread.setText(String.valueOf(num));
+                                }
+                            }
+                        });
+
                     } else if (message.getMesType().equals("search_Friend")) {
                         System.out.println(message.getUserInfo().getAccount());
                         String account = message.getUserInfo().getAccount();

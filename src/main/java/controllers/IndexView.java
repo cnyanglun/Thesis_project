@@ -261,20 +261,13 @@ public class IndexView implements Initializable{
         //load chat Record
         for (User friend : userInfo.getFriendList()) {
             if(friend.getAccount().equals(friendId)){
-//                int count = 0;
                 for (Message message : friend.getChatRecord()) {
-                    chat.appendText(accountId.getText() + " say: \n");
-                    chat.appendText(message.getCon() + "\n");
-                    chat.appendText("\n");
+                    chat.appendText(accountId.getText() + " say: \n" + message.getCon() + "\n" + "\n");
 
-//                    if(message.isUnread()){
-//                        System.out.println(message.isUnread());
-//                        count++;
-//                    }
                 }
-//                friendUnreadMap.put(friendId,count);
             }
         }
+//        System.out.println(userInfo.getUnreadCount());
 
         manageObject.addChat(friendId,chat);
     }
@@ -284,14 +277,23 @@ public class IndexView implements Initializable{
 
         Label friendAccountId = new Label("label");
         Label friendName = new Label("label");
-//        Label unreadCount = new Label();
-
-//        Integer count = friendUnreadMap.get(friendId);
-//        unreadCount.setText(count.toString());
+        Label unreadCount = new Label();
+        unreadCount.setText(" ");
+        unreadCount.setTextFill(Color.RED);
+        manageObject.addLabel(friendId,unreadCount);
 
         VBox friendInfo = new VBox();
 
-        friendInfo.getChildren().addAll(friendAccountId,friendName);
+
+        for (String element : userInfo.getUnreadCount().keySet()) {
+            if(element.equals(friendId)){
+                unreadCount.setText(String.valueOf(userInfo.getUnreadCount().get(element)));
+                break;
+            }
+        }
+
+
+        friendInfo.getChildren().addAll(friendAccountId,unreadCount,friendName);
         friendInfo.setPadding(new Insets(5));
         friendInfo.setSpacing(8);
 
@@ -314,6 +316,10 @@ public class IndexView implements Initializable{
                 speakWith.setText(userInfo.getAccount() + " speak with " + friendId);
                 displayText = manageObject.getChat(friendId);
                 sp.setContent(displayText);
+
+                unreadCount.setText(" ");
+                Message clear_unread = Message.builder().mesType("clear_Unread").sender(userInfo.getAccount()).getter(friendId).build();
+                ccst.sendToServer(clear_unread);
             }
         });
 
@@ -366,7 +372,7 @@ public class IndexView implements Initializable{
                                 displayResult.getChildren().remove(0,count1);
                             }
 
-                            System.out.println(displayResult.getChildren().stream().count());
+//                            System.out.println(displayResult.getChildren().stream().count());
                             AnchorPane friend = new AnchorPane();
 //                                inquireResult = friend;
                             manageObject.addObject("inquireResult",friend);
