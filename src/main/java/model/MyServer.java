@@ -70,14 +70,6 @@ public class MyServer implements Runnable{
                 Message message = Message.builder().build();
                 Object o = ois.readObject();
 
-
-//                if(o instanceof Message){
-//                    Message userInfoMessage = (Message) o;
-//                    if(userInfoMessage.getMesType().equals("userInfo")){
-//                        System.out.println(account);
-//                        oos.writeObject(redis.returnUserInfo(account));
-//                    }
-//                }
                 if(o instanceof User){
                     if (isLoginSuccess(o)) {
                         message.setMesType("loginSuccess");

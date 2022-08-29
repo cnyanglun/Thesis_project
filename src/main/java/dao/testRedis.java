@@ -1,6 +1,5 @@
 package dao;
 
-import model.manageClientThread;
 import org.springframework.stereotype.Repository;
 import org.tinylog.Logger;
 import redis.clients.jedis.Jedis;
@@ -10,6 +9,7 @@ import util.User;
 import util.commonUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 @Repository
 public class testRedis {
@@ -45,7 +45,7 @@ public class testRedis {
 
         jedis.sadd("Accounts",account);
         jedis.sadd(account,account + "_password",email,account + "_friendList",account + "_nickname",account + "_avatar",
-                account + "_chatRecord");
+                account + "_chatRecord",account + "_unreadMessage");
         jedis.hset(account + "_password",account,password);
         Logger.info("The account has been added to database!");
     }
@@ -83,9 +83,8 @@ public class testRedis {
             friendList.add(friendInfo);
         }
         user.setFriendList(friendList);
+        user.setUnreadCount(getUnread(account));
 
-//        if(manageClientThread.notificationList.containsKey(account))
-//            user.setUnreadCount(manageClientThread.getNotificationList(account));
         return user;
     }
 
@@ -114,6 +113,32 @@ public class testRedis {
         return list;
     }
 
+    public void storeUnread(String getter, String sender){
+        if(jedis.sismember(getter + "_unreadMessage", sender + "_count")){
+            jedis.incr(sender + "_count");
+        }else {
+            jedis.sadd(getter + "_unreadMessage",sender + "_count");
+            jedis.set(sender + "_count","1");
+        }
+    }
+
+    public HashMap<String, Integer> getUnread(String account){
+
+        HashMap<String , Integer> unreadCount = new HashMap<>();
+        for (String element : jedis.smembers(account + "_unreadMessage")) {
+            int count = Integer.parseInt(jedis.get(element));
+            element = element.substring(0,element.length()-6);
+            unreadCount.put(element,count);
+        }
+//        System.out.println(unreadCount);
+        return unreadCount;
+    }
+
+    public void clearUnread(String sender , String getter){
+        jedis.srem(sender + "_unreadMessage", getter + "_count");
+        jedis.del(getter + "_count");
+    }
+
     public String addFriend(String senderId, String getterId){
 
         var a =jedis.sadd(senderId + "_friendList",getterId);
@@ -140,11 +165,7 @@ public class testRedis {
 //    public static void main(String[] args) {
 //        testRedis t = new testRedis();
 //
-//        ArrayList<Message> chatRecord = t.getChatRecord("a3", "a2");
-//        for (Message message: chatRecord) {
-//            System.out.println(message);
-//        }
-////        System.out.println();
+//        t.clearUnread("a1","a3");
 //    }
 
 

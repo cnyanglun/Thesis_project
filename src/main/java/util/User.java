@@ -1,28 +1,25 @@
 package util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class User implements java.io.Serializable{
     private String account;
-
     private String password;
-
     private String nickName;
     private String imageUrl;
 //    private int unreadCount;
-
     private ArrayList<Message> chatRecord;
-
     private List<User> friendList = new ArrayList();
+    private HashMap<String,Integer> unreadCount = new HashMap<>();
 
-//    public int getUnreadCount() {
-//        return unreadCount;
-//    }
-//
-//    public void setUnreadCount(int unreadCount) {
-//        this.unreadCount = unreadCount;
-//    }
+    public HashMap<String, Integer> getUnreadCount() {
+        return unreadCount;
+    }
+    public void setUnreadCount(HashMap<String, Integer> unreadCount) {
+        this.unreadCount = unreadCount;
+    }
 
     public List<User> getFriendList() {
         return friendList;

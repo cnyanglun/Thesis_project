@@ -42,8 +42,7 @@ public class SerConClientThread extends Thread{
                     if(!manageClientThread.isClientOnline(message.getGetter())){
                         Logger.info(message.getGetter() + " is not online");
                         //Count how many notifications
-//                        manageClientThread.addNotificationList(message.getGetter());
-//                        System.out.println(message.getGetter() + manageClientThread.getNotificationList(message.getGetter()));
+                        redis.storeUnread(message.getGetter(),message.getSender());
 
                         //Store the chat Record
                         byte[] messageObject = SerializeUtil.serialize(message);
@@ -119,6 +118,8 @@ public class SerConClientThread extends Thread{
                     Logger.info(account + " is offline");
                     manageClientThread.delClientThread(account);
                     break;
+                } else if (message.getMesType().equals("clear_Unread")) {
+                    redis.clearUnread(message.getSender(),message.getGetter());
                 }
             }
 
