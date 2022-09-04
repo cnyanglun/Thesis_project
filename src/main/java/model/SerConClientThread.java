@@ -2,21 +2,18 @@ package model;
 
 import org.springframework.stereotype.Service;
 import org.tinylog.Logger;
-import util.Message;
-import util.User;
+import util.*;
 import dao.testRedis;
-import util.SerializeUtil;
-import util.commonUtil;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.ArrayList;
+
 @Service
 public class SerConClientThread extends Thread{
 
     private Socket socket;
     private String account;
-//    @Autowired
-//    testRedis redis;
     testRedis redis = new testRedis();
 
 
@@ -120,6 +117,44 @@ public class SerConClientThread extends Thread{
                     break;
                 } else if (message.getMesType().equals("clear_Unread")) {
                     redis.clearUnread(message.getSender(),message.getGetter());
+                } else if (message.getMesType().equals("create_group")) {
+                    String sender = message.getSender();
+                    Group group = message.getGroup();
+
+                    ArrayList<String> getterList = message.getGetterList();
+                    //Store members
+                    for (String userId:getterList) {
+                        redis.storeGroup(userId , group);
+                    }
+                    //Store yourself
+                    redis.storeGroup(sender , group);
+                } else if (message.getMesType().equals("group_message")){
+                    ArrayList<String> memberList = message.getGetterList();
+                    String groupName = message.getGroup().getGroupName();
+                    System.out.println(memberList);
+
+                    for (String member:memberList) {
+                        if(!manageClientThread.isClientOnline(member)){
+
+                            //Count how many notifications
+//                            redis.storeUnread(message.getSender(),message.getGetter());
+
+                            //Store the chat Record
+                            redis.storeGroup(member,groupName);
+
+                            continue;
+                        }
+
+                        SerConClientThread clientThread = manageClientThread.getClientThread(member);
+                        ObjectOutputStream oos1 = new ObjectOutputStream(clientThread.socket.getOutputStream());
+                        oos1.writeObject(message);
+
+                        redis.storeGroup(member,groupName);
+                    }
+
+                    byte[] messageObject = SerializeUtil.serialize(message);
+                    redis.storeGroupChatRecord(groupName,messageObject);
+
                 }
             }
 

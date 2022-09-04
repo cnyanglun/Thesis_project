@@ -3,20 +3,21 @@ package dao;
 import org.springframework.stereotype.Repository;
 import org.tinylog.Logger;
 import redis.clients.jedis.Jedis;
-import util.Message;
-import util.SerializeUtil;
-import util.User;
-import util.commonUtil;
+import util.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
+
 @Repository
 public class testRedis {
     private Jedis jedis;
 
     public void setJedis(){
-        jedis = new Jedis("127.0.0.1", 6379);
+//        jedis = new Jedis("127.0.0.1", 6379);
+        jedis = new Jedis("redis-11368.c238.us-central1-2.gce.cloud.redislabs.com",11368);
+        jedis.auth("s8e4xFzAYuntHPUeQFrvFliB8gkiRwSe");
     }
 
 
@@ -45,7 +46,7 @@ public class testRedis {
 
         jedis.sadd("Accounts",account);
         jedis.sadd(account,account + "_password",email,account + "_friendList",account + "_nickname",account + "_avatar",
-                account + "_chatRecord",account + "_unreadMessage");
+                account + "_chatRecord",account + "_unreadMessage",account + "_groupList");
         jedis.hset(account + "_password",account,password);
         Logger.info("The account has been added to database!");
     }
@@ -63,31 +64,6 @@ public class testRedis {
         }
     }
 
-    public User returnUserInfo(String account){
-        User user = new User();
-        user.setAccount(account);
-        user.setNickName(jedis.get(account + "_nickname"));
-        user.setImageUrl(jedis.get(account + "_avatar"));
-        List<User> friendList = new ArrayList();
-        ArrayList<Message> chatRecordList;
-        var set= jedis.smembers(account + "_friendList");
-        for (String element : set) {
-            User friendInfo = new User();
-            friendInfo.setAccount(element);
-            friendInfo.setNickName(jedis.get(element + "_nickname"));
-            friendInfo.setImageUrl(jedis.get(element + "_avatar"));
-
-            chatRecordList = getChatRecord(account, element);
-            friendInfo.setChatRecord(chatRecordList);
-
-            friendList.add(friendInfo);
-        }
-        user.setFriendList(friendList);
-        user.setUnreadCount(getUnread(account));
-
-        return user;
-    }
-
     public void storeChatRecord(String sender, String getter , byte[] messageObject){
 //        String chatRecordName = commonUtil.compareStrings(sender,getter);
         String chatRecordName = commonUtil.compareStrings(sender,getter) + "_chatRecord";
@@ -98,6 +74,14 @@ public class testRedis {
 
         jedis.rpush(chatRecordName.getBytes(), messageObject);
     }
+
+    public void storeGroup(String accountId ,String groupName){
+        jedis.sadd(accountId + "_groupChatRecord" , groupName + "_group");
+    }
+    public void storeGroupChatRecord(String groupName , byte[] messageObject){
+        jedis.rpush((groupName + "_group").getBytes() , messageObject);
+    }
+
 
     public ArrayList<Message> getChatRecord(String sender,String getter){
         String name = commonUtil.compareStrings(sender, getter);
@@ -134,6 +118,22 @@ public class testRedis {
         return unreadCount;
     }
 
+    public void storeGroup(String account, Group group){
+        byte[] serialize = SerializeUtil.serialize(group);
+        jedis.rpush((account + "_groupList").getBytes(),serialize);
+    }
+
+    public ArrayList<Group> getGroup(String account){
+        var smembers = jedis.lrange((account + "_groupList").getBytes(),0,-1);
+
+        ArrayList<Group> groupList = new ArrayList<>();
+        for (byte[] element:smembers) {
+            Group group = (Group) SerializeUtil.unSerialize(element);
+            groupList.add(group);
+        }
+        return groupList;
+    }
+
     public void clearUnread(String sender , String getter){
         jedis.srem(sender + "_unreadMessage", getter + "_count");
         jedis.del(getter + "_count");
@@ -159,13 +159,40 @@ public class testRedis {
         return result;
     }
 
+    public User returnUserInfo(String account){
+        User user = new User();
+        user.setAccount(account);
+        user.setNickName(jedis.get(account + "_nickname"));
+        user.setImageUrl(jedis.get(account + "_avatar"));
+        List<User> friendList = new ArrayList();
+        ArrayList<Message> chatRecordList;
+        var set= jedis.smembers(account + "_friendList");
+        for (String element : set) {
+            User friendInfo = new User();
+            friendInfo.setAccount(element);
+            friendInfo.setNickName(jedis.get(element + "_nickname"));
+            friendInfo.setImageUrl(jedis.get(element + "_avatar"));
+
+            chatRecordList = getChatRecord(account, element);
+            friendInfo.setChatRecord(chatRecordList);
+
+            friendList.add(friendInfo);
+        }
+        user.setFriendList(friendList);
+        user.setUnreadCount(getUnread(account));
+        user.setGroups(getGroup(account));
+
+        return user;
+    }
 
 
 
 //    public static void main(String[] args) {
 //        testRedis t = new testRedis();
 //
-//        t.clearUnread("a1","a3");
+//
+//        ArrayList<Group> a1 = t.getGroup("a1");
+//        System.out.println(a1.get(0));
 //    }
 
 

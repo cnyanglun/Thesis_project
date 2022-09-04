@@ -9,10 +9,19 @@ public class User implements java.io.Serializable{
     private String password;
     private String nickName;
     private String imageUrl;
-//    private int unreadCount;
+    //    private int unreadCount;
     private ArrayList<Message> chatRecord;
     private List<User> friendList = new ArrayList();
     private HashMap<String,Integer> unreadCount = new HashMap<>();
+    private ArrayList<Group> groups;
+
+    public ArrayList<Group> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(ArrayList<Group> groups) {
+        this.groups = groups;
+    }
 
     public HashMap<String, Integer> getUnreadCount() {
         return unreadCount;

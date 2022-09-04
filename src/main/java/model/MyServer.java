@@ -64,6 +64,7 @@ public class MyServer implements Runnable{
             ServerSocket ss = new ServerSocket(9999);
             while (!isThreadFinish) {
                 Socket socket = ss.accept();
+//                System.out.println(socket.getRemoteSocketAddress());
                 ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
                 ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
 //                Message message = new Message();
