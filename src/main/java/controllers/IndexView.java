@@ -1,6 +1,8 @@
 package controllers;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,6 +13,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -21,6 +24,7 @@ import lombok.SneakyThrows;
 import model.ClientConServerThread;
 import model.clientUser;
 import org.tinylog.Logger;
+import util.Group;
 import util.Message;
 import util.User;
 import util.tool.manageObject;
@@ -65,7 +69,6 @@ public class IndexView implements Initializable{
     private BorderPane win;
     @FXML
     private AnchorPane accountInfo;
-//    private HashMap<String,Integer> friendUnreadMap = new HashMap<>();
 
     private Stage stage;
 
@@ -76,7 +79,7 @@ public class IndexView implements Initializable{
     String url;
     private User userInfo;
     private String friendId1;
-//    HashMap<String,TextArea> hm = new HashMap<>();
+    private Group group1;
 
     String[] imageUrl = {"/image/avatars/image1.jpg","/image/avatars/image2.jpg","/image/avatars/image3.jpg",
                         "/image/avatars/image4.jpg","/image/avatars/image5.jpg","/image/avatars/image6.jpg",
@@ -87,8 +90,13 @@ public class IndexView implements Initializable{
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //get the userInfo from Server
 
+        try {
+            Thread.sleep(60 * 1000);
+        } catch (InterruptedException e) {
+        }
         init();
         initFriendList();
+        initGroupList();
         addFriendFunction();
         createGroupFunction();
         turnOffFunction();
@@ -271,22 +279,21 @@ public class IndexView implements Initializable{
 
         manageObject.addChat(friendId,chat);
     }
-
     private HBox createFriend(User friendObject){
-        String friendId = friendObject.getAccount();
+        String name = friendObject.getAccount();
 
         Label friendAccountId = new Label("label");
         Label friendName = new Label("label");
         Label unreadCount = new Label();
         unreadCount.setText(" ");
         unreadCount.setTextFill(Color.RED);
-        manageObject.addLabel(friendId,unreadCount);
+        manageObject.addLabel(name,unreadCount);
 
         VBox friendInfo = new VBox();
 
 
         for (String element : userInfo.getUnreadCount().keySet()) {
-            if(element.equals(friendId)){
+            if(element.equals(name)){
                 unreadCount.setText(String.valueOf(userInfo.getUnreadCount().get(element)));
                 break;
             }
@@ -299,7 +306,7 @@ public class IndexView implements Initializable{
 
         ImageView image;
         try {
-            friendAccountId.setText(friendId);
+            friendAccountId.setText(name);
             image = new ImageView(new Image(friendObject.getImageUrl(), 60, 60, false, false));
             friendName.setText(friendObject.getNickName());
         }catch (NullPointerException e){
@@ -311,14 +318,14 @@ public class IndexView implements Initializable{
             @Override
             public void handle(MouseEvent mouseEvent) {
                 win.setCenter(chatInterface);
-                friendId1 = friendId;
+                friendId1 = name;
                 chatInterface.setVisible(true);
-                speakWith.setText(userInfo.getAccount() + " speak with " + friendId);
-                displayText = manageObject.getChat(friendId);
+                speakWith.setText(userInfo.getAccount() + " speak with " + name);
+                displayText = manageObject.getChat(name);
                 sp.setContent(displayText);
 
                 unreadCount.setText(" ");
-                Message clear_unread = Message.builder().mesType("clear_Unread").sender(userInfo.getAccount()).getter(friendId).build();
+                Message clear_unread = Message.builder().mesType("clear_Unread").sender(userInfo.getAccount()).getter(name).build();
                 ccst.sendToServer(clear_unread);
             }
         });
@@ -329,6 +336,67 @@ public class IndexView implements Initializable{
 
         friend.getChildren().addAll(image,friendInfo);
         return friend;
+    }
+
+    private void createGroupChat(String groupName){
+        TextArea chat = new TextArea();
+        chat.setEditable(false);
+        chat.setPrefSize(537,288);
+
+        manageObject.addChat(groupName,chat);
+    }
+
+    private HBox createGroupHBox(Group group){
+        String name = group.getGroupName();
+
+//        Label friendAccountId = new Label("label");
+        Label groupName = new Label("(Group:) " + group.getGroupName());
+        Label unreadCount = new Label();
+        unreadCount.setText(" ");
+        unreadCount.setTextFill(Color.RED);
+        manageObject.addLabel(name,unreadCount);
+
+        VBox groupInfo = new VBox();
+
+
+        for (String element : userInfo.getUnreadCount().keySet()) {
+            if(element.equals(name)){
+                unreadCount.setText(String.valueOf(userInfo.getUnreadCount().get(element)));
+                break;
+            }
+        }
+
+
+        groupInfo.getChildren().addAll(groupName,unreadCount);
+        groupInfo.setPadding(new Insets(5));
+        groupInfo.setSpacing(8);
+
+        ImageView image = new ImageView();
+        image.setImage(new Image("/image/image.jpg",60,60,false,false));
+
+        image.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                group1 = group;
+                win.setCenter(chatInterface);
+                friendId1 = name;
+                chatInterface.setVisible(true);
+                speakWith.setText("You are in " + name + " Group");
+                displayText = manageObject.getChat(name);
+                sp.setContent(displayText);
+
+                unreadCount.setText(" ");
+                Message clear_unread = Message.builder().mesType("clear_Unread").sender(userInfo.getAccount()).getter(name).build();
+//                ccst.sendToServer(clear_unread);
+            }
+        });
+
+
+        HBox groupBox = new HBox();
+        groupBox.resize(200,90);
+
+        groupBox.getChildren().addAll(image, groupInfo);
+        return groupBox;
     }
 
     private void addFriendFunction(){
@@ -470,35 +538,175 @@ public class IndexView implements Initializable{
         createGroup.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
+                VBox vBox = new VBox();
 
+                HBox group = new HBox();
+                win.setCenter(vBox);
+                group.setSpacing(20);
+                group.setPadding(new Insets(20));
+
+                TableView table = new TableView();
+                table.setMaxWidth(200);
+                table.setMaxHeight(300);
+
+                TableColumn<User,String> account = new TableColumn("account");
+                TableColumn<User,String> name = new TableColumn("name");
+
+                account.setCellValueFactory(new PropertyValueFactory<>("account"));
+                name.setCellValueFactory(new PropertyValueFactory<>("nickName"));
+
+                List<User> list = userInfo.getFriendList();
+
+                ObservableList<User> obList = FXCollections.observableArrayList();
+                obList.addAll(list);
+                table.setItems(obList);
+
+
+                TableView table2 = new TableView();
+                table2.setMaxWidth(200);
+                table2.setMaxHeight(300);
+
+                TableColumn<User,String> account2 = new TableColumn("account");
+                TableColumn<User,String> name2 = new TableColumn("name");
+
+                account2.setCellValueFactory(new PropertyValueFactory<>("account"));
+                name2.setCellValueFactory(new PropertyValueFactory<>("nickName"));
+
+
+
+                table.setRowFactory(t -> {
+                    TableRow row = new TableRow();
+                    row.setOnMouseClicked(event -> {
+                        if(event.getClickCount() == 2 && (! row.isEmpty())){
+                            if(!table2.getItems().contains(row.getItem())){
+                                User item = (User)row.getItem();
+                                table2.getItems().add(item);
+                            }
+                        }
+                    });
+                    return row;
+                });
+
+                table2.setRowFactory(t -> {
+                    TableRow row = new TableRow();
+                    row.setOnMouseClicked(event -> {
+                        if(event.getClickCount() == 2 && (! row.isEmpty())){
+                            User item = (User)row.getItem();
+                            table2.getItems().remove(item);
+                        }
+                    });
+                    return row;
+                });
+
+                table.getColumns().addAll(account,name);
+                table2.getColumns().addAll(account2,name2);
+
+                VBox resultVbox = new VBox();
+                resultVbox.setAlignment(Pos.TOP_CENTER);
+                resultVbox.setSpacing(20);
+
+                TextField groupName = new TextField();
+                Button ok = new Button("OK");
+                Label result = new Label();
+                resultVbox.getChildren().addAll(groupName,ok,result);
+
+                ArrayList<String> accounts = new ArrayList<>();
+                ok.setOnMouseClicked(e -> {
+                    ObservableList items = table2.getItems();
+
+                    String groupNameText = groupName.getText();
+                    if(!groupNameText.isEmpty()){
+                        for (Object user:items) {
+                            var user1 = (User) user;
+                            accounts.add(user1.getAccount());
+                        }
+                        accounts.add(userInfo.getAccount());
+
+                        TextArea chat = new TextArea();
+                        chat.setEditable(false);
+                        chat.setPrefSize(537,288);
+
+                        manageObject.addChat(groupNameText + "_group",chat);
+
+                        Group groupBuild = Group.builder().groupName(groupNameText).memberName(accounts).build();
+                        Message create_group = Message.builder()
+                                .mesType("create_group")
+                                .sender(userInfo.getAccount())
+                                .getterList(accounts)
+                                .group(groupBuild).build();
+
+                        ccst.sendToServer(create_group);
+
+                        result.setText("Success");
+//                        refresh();
+                    }
+                });
+
+
+                group.getChildren().addAll(table,table2);
+                vBox.getChildren().addAll(group,resultVbox);
             }
         });
     }
 
+    private void initGroupList(){
+        ArrayList<Group> groups = userInfo.getGroups();
+
+        for (Group group:groups) {
+            createGroupChat(group.getGroupName());
+            HBox groupHBox = createGroupHBox(group);
+            friendList.getChildren().add(groupHBox);
+        }
+    }
+
     @FXML
     private void send(){
+
         if(!inputText.getText().isEmpty()){
-            String content = inputText.getText();
+            String type = speakWith.getText();
+            if(type.substring(type.length()-5).equals("Group")){
+                System.out.println("this is group");
 
-            Message commonMessage = Message.builder()
-                    .mesType("common_Message")
-                    .sender(userInfo.getAccount())
-                    .getter(friendId1)
-                    .con(content).build();
+                String content = inputText.getText();
 
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss a");
-            String time = sdf.format(new Date());
-            commonMessage.setSendTime(time);
+                Message group_message = Message.builder()
+                        .mesType("group_message")
+                        .sender(userInfo.getAccount())
+                        .getter(friendId1)
+                        .con(content)
+                        .group(group1)
+                        .getterList(group1.getMemberName()).build();
 
-            ccst.sendToServer(commonMessage);
+                ccst.sendToServer(group_message);
+
+                inputText.clear();
+
+            }else {
+
+                String content = inputText.getText();
+
+                Message commonMessage = Message.builder()
+                        .mesType("common_Message")
+                        .sender(userInfo.getAccount())
+                        .getter(friendId1)
+                        .con(content).build();
+
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss a");
+                String time = sdf.format(new Date());
+                commonMessage.setSendTime(time);
+
+                ccst.sendToServer(commonMessage);
 
 
-            inputText.clear();
+                inputText.clear();
 
-            displayText.appendText(accountId.getText() + " say: \n");
-            displayText.appendText(content + "\n");
-            displayText.appendText("\n");
+                displayText.appendText(accountId.getText() + " say: \n");
+                displayText.appendText(content + "\n");
+                displayText.appendText("\n");
+
+            }
         }
+
     }
 
     @SneakyThrows

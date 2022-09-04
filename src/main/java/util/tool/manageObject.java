@@ -6,8 +6,14 @@ import javafx.scene.control.TextArea;
 import java.util.*;
 
 public class manageObject {
+
+    //manage friend chat Interface
     private static HashMap<String, TextArea> TextAreahm = new HashMap<>();
+
+    //manage unread Message
     private static HashMap<String, Label> labelHM = new HashMap<>();
+
+    //manage various Object
     private static HashMap<String, Object> objectHashMap = new HashMap<>();
 
     public static void addChat(String accountId, TextArea textArea)

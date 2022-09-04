@@ -19,7 +19,8 @@ public class clientUser {
 
     public clientUser(){
         try {
-            socket = new Socket("127.0.0.1",9999);
+            socket = new Socket("fe80::29c5:8416:683b:835f%11",9999);
+//            socket = new Socket("192.168.2.5",999);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -38,6 +38,8 @@ public class ClientConServerThread extends Thread{
 
                 if (o instanceof User) {
                     user = (User) o;
+                    Thread indexThread = thread.getThreadByName("JavaFX Application Thread");
+                    indexThread.interrupt();
                 } else if (o instanceof Message) {
                     Message message = (Message) o;
                     if (message.getMesType().equals("common_Message")){
@@ -109,6 +111,16 @@ public class ClientConServerThread extends Thread{
 
                         indexThread.interrupt();
                         System.out.println("success to change Avatar");
+                    } else if (message.getMesType().equals("group_message")){
+                        String con = message.getCon();
+                        String sender = message.getSender();
+                        String name = message.getGetter();
+                        System.out.println(con + sender + name);
+
+                        TextArea chat = manageObject.getChat(name);
+                        chat.appendText(sender + " say: \n");
+                        chat.appendText(con + "\n" + "\n");
+
                     }
                 }
 
