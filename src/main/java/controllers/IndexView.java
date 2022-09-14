@@ -208,23 +208,25 @@ public class IndexView implements Initializable{
                         change.setOnMouseClicked(new EventHandler<MouseEvent>() {
                             @Override
                             public void handle(MouseEvent mouseEvent) {
-                                Message change_avatars = Message.builder()
-                                        .mesType("change_Avatar")
-                                        .sender(userInfo.getAccount())
-                                        .con(url).build();
+                                if(url != null){
+                                    Message change_avatars = Message.builder()
+                                            .mesType("change_Avatar")
+                                            .sender(userInfo.getAccount())
+                                            .con(url).build();
 
-                                ccst.sendToServer(change_avatars);
+                                    ccst.sendToServer(change_avatars);
 
-                                try {
-                                    Thread.sleep(1000*60);
-                                } catch (InterruptedException e) {
+                                    try {
+                                        Thread.sleep(1000*5);
+                                    } catch (InterruptedException e) {
+                                        System.out.println("good");
+                                    }
 
+                                    if(isOk){
+                                        changeResult.setText("Success to Change");
+                                    }else
+                                        changeResult.setText("Failed to Change");
                                 }
-
-                                if(isOk){
-                                    changeResult.setText("Success to Change");
-                                }else
-                                    changeResult.setText("Failed to Change");
 
                             }
                         });
@@ -342,6 +344,20 @@ public class IndexView implements Initializable{
         TextArea chat = new TextArea();
         chat.setEditable(false);
         chat.setPrefSize(537,288);
+
+        ArrayList<ArrayList<Message>> groups = userInfo.getGroupChatRecord();
+        for (int i = 0; i < groups.size(); i++) {
+            ArrayList<Message> group = groups.get(i);
+            for (int j = 0; j < group.size(); j++) {
+                Message message = group.get(j);
+//                System.out.println(message.getCon());
+                if(message.getGroup().getGroupName().equals(groupName)){
+                    chat.appendText(message.getSender() + "says:\n" + message.getCon() + "\n\n");
+                }
+
+            }
+
+        }
 
         manageObject.addChat(groupName,chat);
     }
@@ -638,7 +654,7 @@ public class IndexView implements Initializable{
                         ccst.sendToServer(create_group);
 
                         result.setText("Success");
-//                        refresh();
+                        refresh();
                     }
                 });
 
@@ -680,6 +696,10 @@ public class IndexView implements Initializable{
                 ccst.sendToServer(group_message);
 
                 inputText.clear();
+
+                displayText.appendText(accountId.getText() + " say: \n");
+                displayText.appendText(content + "\n");
+                displayText.appendText("\n");
 
             }else {
 

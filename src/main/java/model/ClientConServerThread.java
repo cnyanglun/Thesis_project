@@ -108,9 +108,9 @@ public class ClientConServerThread extends Thread{
                             indexView.setIsOk(true);
                         }else
                             indexView.setIsOk(false);
-
                         indexThread.interrupt();
                         System.out.println("success to change Avatar");
+
                     } else if (message.getMesType().equals("group_message")){
                         String con = message.getCon();
                         String sender = message.getSender();
@@ -120,6 +120,20 @@ public class ClientConServerThread extends Thread{
                         TextArea chat = manageObject.getChat(name);
                         chat.appendText(sender + " say: \n");
                         chat.appendText(con + "\n" + "\n");
+
+                        Label unread = manageObject.getLabel(message.getGroup().getGroupName());
+                        Platform.runLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                String text = unread.getText();
+                                if(text.equals(" "))
+                                    unread.setText("1");
+                                else {
+                                    int num = Integer.parseInt(text) + 1;
+                                    unread.setText(String.valueOf(num));
+                                }
+                            }
+                        });
 
                     }
                 }
