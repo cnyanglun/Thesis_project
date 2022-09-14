@@ -102,15 +102,18 @@ public class SerConClientThread extends Thread{
                     ObjectOutputStream oos4 = new ObjectOutputStream(clientThread.socket.getOutputStream());
                     oos4.writeObject(message1);
                 } else if (message.getMesType().equals("change_Avatar")) {
+                    System.out.println("shou dao");
                     String result = redis.changeAvatar(message.getSender(), message.getCon());
 
                     Message change_avatar_result = Message.builder()
                             .mesType("change_Avatar_Result")
                             .con(result).build();
+                    System.out.println("shou dao");
 
                     SerConClientThread clientThread = manageClientThread.getClientThread(message.getSender());
                     ObjectOutputStream oos5 = new ObjectOutputStream(clientThread.socket.getOutputStream());
                     oos5.writeObject(change_avatar_result);
+                    System.out.println("shou dao");
                 } else if (message.getMesType().equals("exit_Message")) {
                     Logger.info(account + " is offline");
                     manageClientThread.delClientThread(account);
@@ -126,20 +129,15 @@ public class SerConClientThread extends Thread{
                     for (String userId:getterList) {
                         redis.storeGroup(userId , group);
                     }
-                    //Store yourself
-                    redis.storeGroup(sender , group);
                 } else if (message.getMesType().equals("group_message")){
                     ArrayList<String> memberList = message.getGetterList();
+                    memberList.remove(message.getSender());
                     String groupName = message.getGroup().getGroupName();
                     System.out.println(memberList);
 
                     for (String member:memberList) {
                         if(!manageClientThread.isClientOnline(member)){
-
-                            //Count how many notifications
-//                            redis.storeUnread(message.getSender(),message.getGetter());
-
-                            //Store the chat Record
+                            redis.storeUnread(member,groupName);
                             redis.storeGroup(member,groupName);
 
                             continue;

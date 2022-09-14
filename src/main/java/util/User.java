@@ -14,6 +14,15 @@ public class User implements java.io.Serializable{
     private List<User> friendList = new ArrayList();
     private HashMap<String,Integer> unreadCount = new HashMap<>();
     private ArrayList<Group> groups;
+    private ArrayList<ArrayList<Message>> groupChatRecord;
+
+    public ArrayList<ArrayList<Message>> getGroupChatRecord() {
+        return groupChatRecord;
+    }
+
+    public void setGroupChatRecord(ArrayList<ArrayList<Message>> groupChatRecord) {
+        this.groupChatRecord = groupChatRecord;
+    }
 
     public ArrayList<Group> getGroups() {
         return groups;

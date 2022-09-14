@@ -46,7 +46,7 @@ public class testRedis {
 
         jedis.sadd("Accounts",account);
         jedis.sadd(account,account + "_password",email,account + "_friendList",account + "_nickname",account + "_avatar",
-                account + "_chatRecord",account + "_unreadMessage",account + "_groupList");
+                account + "_chatRecord",account + "_unreadMessage",account + "_groupList",account + "_groupChatRecord");
         jedis.hset(account + "_password",account,password);
         Logger.info("The account has been added to database!");
     }
@@ -80,6 +80,23 @@ public class testRedis {
     }
     public void storeGroupChatRecord(String groupName , byte[] messageObject){
         jedis.rpush((groupName + "_group").getBytes() , messageObject);
+    }
+
+    public ArrayList<ArrayList<Message>> getGroupChatRecord(String account){
+        Set<String> smembers = jedis.smembers(account + "_groupChatRecord");
+
+        ArrayList<ArrayList<Message>> groups = new ArrayList<>();
+        for (String member:smembers) {
+            List<byte[]> group = jedis.lrange(member.getBytes(), 0, -1);
+
+            ArrayList<Message> groupMessages = new ArrayList<>();
+            for (int i = 0; i < group.size(); i++) {
+                Message message = (Message) SerializeUtil.unSerialize(group.get(i));
+                groupMessages.add(message);
+            }
+            groups.add(groupMessages);
+        }
+        return groups;
     }
 
 
@@ -181,19 +198,19 @@ public class testRedis {
         user.setFriendList(friendList);
         user.setUnreadCount(getUnread(account));
         user.setGroups(getGroup(account));
+        user.setGroupChatRecord(getGroupChatRecord(account));
 
         return user;
     }
 
 
 
-//    public static void main(String[] args) {
-//        testRedis t = new testRedis();
-//
-//
-//        ArrayList<Group> a1 = t.getGroup("a1");
-//        System.out.println(a1.get(0));
-//    }
+    public static void main(String[] args) {
+        testRedis t = new testRedis();
+
+
+        t.getGroupChatRecord("a1");
+    }
 
 
 }

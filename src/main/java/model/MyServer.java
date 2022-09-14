@@ -61,7 +61,7 @@ public class MyServer implements Runnable{
     public void run() {
         try {
             Logger.info("Start Server, Port 9999");
-            ServerSocket ss = new ServerSocket(9999);
+            ServerSocket ss = new ServerSocket(8888);
             while (!isThreadFinish) {
                 Socket socket = ss.accept();
 //                System.out.println(socket.getRemoteSocketAddress());
