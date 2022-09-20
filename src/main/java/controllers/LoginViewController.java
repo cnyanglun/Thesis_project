@@ -49,7 +49,10 @@ public class LoginViewController {
         else {
             user.setAccount(textAccount.getText());
             user.setPassword(textPassword.getText());
+
+            //Check if the password is correct
             boolean isValidPassword = clientUser.sendLoginInfo(user);
+            //Transfer to the index view
             if(isValidPassword){
                 FXMLLoader Loader = new FXMLLoader(getClass().getResource("/JavaFx/IndexView.fxml"));
                 root = Loader.load();

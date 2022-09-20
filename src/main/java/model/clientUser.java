@@ -12,6 +12,9 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.HashMap;
 
+/**
+ * Send login and registration requests to the server.
+ */
 public class clientUser {
     public static Socket socket;
 
@@ -19,20 +22,27 @@ public class clientUser {
 
     public clientUser(){
         try {
+            //Create socket and connect Server
             socket = new Socket("2a02:ab88:2504:700:fd8e:3473:814c:4247",8888);
-//            socket = new Socket("192.168.2.5",999);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
+    /**
+     * Send a request to the server and get a reply whether the login is allowed.
+     * If a successful login creates a thread dedicated to the communication server for the user.
+     * @param o is a user object , and send it to server.
+     * @return a boolean to determine whether to allow login.
+     */
     public boolean sendLoginInfo(Object o){
         boolean isSuccessLogin = false;
         try {
-//            socket = new Socket("127.0.0.1",9999);
+            //Send message to server.
             ObjectOutputStream oos=new ObjectOutputStream(socket.getOutputStream());
             oos.writeObject(o);
 
+            //Review message from server.
             ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
             Message message = (Message) ois.readObject();
 
@@ -40,6 +50,7 @@ public class clientUser {
                 Logger.info("登录成功");
                 isSuccessLogin = true;
 
+                //Create a thread dedicated communication server
                 ClientConServerThread clientConServerThread = new ClientConServerThread(socket);
                 manageObject.addObject("clientConServerThread",clientConServerThread);
                 clientConServerThread.start();
@@ -57,10 +68,14 @@ public class clientUser {
         return isSuccessLogin;
     }
 
+    /**
+     * Send a request to server to register an account.
+     * @param o is a user object , and send it to server.
+     * @return a boolean to determine whether registration is successful.
+     */
     public boolean sendRegisterInfo(Object o){
         boolean isSuccessLogin = false;
         try {
-//            Socket socket = new Socket("127.0.0.1",9999);
             ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
             oos.writeObject(o);
 

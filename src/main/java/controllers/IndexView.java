@@ -74,6 +74,9 @@ public class IndexView implements Initializable{
 
     boolean isOk = true;
 
+    /**
+     * the object of ClientConServerThread.
+     */
     private ClientConServerThread ccst;
 
     String url;
@@ -81,6 +84,9 @@ public class IndexView implements Initializable{
     private String friendId1;
     private Group group1;
 
+    /**
+     * The url of avatars.
+     */
     String[] imageUrl = {"/image/avatars/image1.jpg","/image/avatars/image2.jpg","/image/avatars/image3.jpg",
                         "/image/avatars/image4.jpg","/image/avatars/image5.jpg","/image/avatars/image6.jpg",
                         "/image/avatars/image7.jpg","/image/avatars/image8.jpg","/image/avatars/image9.jpg"
@@ -90,10 +96,12 @@ public class IndexView implements Initializable{
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //get the userInfo from Server
 
+        //Wait the initialization information come.
         try {
             Thread.sleep(60 * 1000);
         } catch (InterruptedException e) {
         }
+
         init();
         initFriendList();
         initGroupList();
@@ -102,6 +110,10 @@ public class IndexView implements Initializable{
         turnOffFunction();
         userInfoModify();
     }
+
+    /**
+     * Basic processing, binding user information to a fixed location.
+     */
     private void init(){
         try {
             userInfo = ClientConServerThread.user;
@@ -117,6 +129,9 @@ public class IndexView implements Initializable{
 
     }
 
+    /**
+     * Functions of Changing user's name and avatar.
+     */
     private void userInfoModify(){
         accountInfo.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -246,6 +261,9 @@ public class IndexView implements Initializable{
         });
     }
 
+    /**
+     * Get all friends from initialization user's information.
+     */
     public void initFriendList(){
         chatInterface.setVisible(false);
         var list = userInfo.getFriendList();
@@ -263,6 +281,10 @@ public class IndexView implements Initializable{
         }
     }
 
+    /**
+     * Create and initialize a chat box with friends.
+     * @param friendId is the account of friend.
+     */
     public void createChat(String friendId){
         TextArea chat = new TextArea();
         chat.setEditable(false);
@@ -281,6 +303,12 @@ public class IndexView implements Initializable{
 
         manageObject.addChat(friendId,chat);
     }
+
+    /**
+     * Create a friend's HBox and information and set click event.
+     * @param friendObject
+     * @return a HBox with click event.
+     */
     private HBox createFriend(User friendObject){
         String name = friendObject.getAccount();
 
@@ -340,6 +368,10 @@ public class IndexView implements Initializable{
         return friend;
     }
 
+    /**
+     * Create and initialize a chat box with groups.
+     * @param groupName is the name of Group.
+     */
     private void createGroupChat(String groupName){
         TextArea chat = new TextArea();
         chat.setEditable(false);
@@ -362,6 +394,11 @@ public class IndexView implements Initializable{
         manageObject.addChat(groupName,chat);
     }
 
+    /**
+     * Create the group of HBox and set click event.
+     * @param group is a group object which contain group's information
+     * @return a group HBox with click event.
+     */
     private HBox createGroupHBox(Group group){
         String name = group.getGroupName();
 
@@ -415,6 +452,9 @@ public class IndexView implements Initializable{
         return groupBox;
     }
 
+    /**
+     * Add friend function , it contains the function of querying and adding friends
+     */
     private void addFriendFunction(){
         addFriend.setImage(new Image("/image/addfriend.png", 30, 30, false, false));
         addFriend.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -530,6 +570,9 @@ public class IndexView implements Initializable{
         });
     }
 
+    /**
+     * Close the software and the link to the server
+     */
     private void turnOffFunction(){
         turnOff.setImage(new Image("/image/exit.png",30,30,false,false));
         turnOff.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -549,6 +592,9 @@ public class IndexView implements Initializable{
         });
     }
 
+    /**
+     * The function of Creating group.
+     */
     private void createGroupFunction(){
         createGroup.setImage(new Image("/image/img.png",30,30,false,false));
         createGroup.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -654,7 +700,6 @@ public class IndexView implements Initializable{
                         ccst.sendToServer(create_group);
 
                         result.setText("Success");
-                        refresh();
                     }
                 });
 
@@ -665,6 +710,9 @@ public class IndexView implements Initializable{
         });
     }
 
+    /**
+     * Get all the groups from user initialization information.
+     */
     private void initGroupList(){
         ArrayList<Group> groups = userInfo.getGroups();
 
@@ -676,6 +724,10 @@ public class IndexView implements Initializable{
     }
 
     @FXML
+    /**
+     * Send the message to server , The information sent is divided into two categories,
+     * common message and group message.
+     */
     private void send(){
 
         if(!inputText.getText().isEmpty()){
@@ -744,7 +796,11 @@ public class IndexView implements Initializable{
     public void setIsOk(boolean a){
         this.isOk = a;
     }
+
     @FXML
+    /**
+     * Cleaning all the characters in AreaText.
+     */
     private void clearAll(){
         inputText.clear();
     }

@@ -30,24 +30,33 @@ public class ClientConServerThread extends Thread{
     private int count = 0;
 
     @Override
+    // Accept messages from the server.
     public void run() {
         while(true){
             try {
+                // Get initialization information from the server.
                 ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
                 Object o = ois.readObject();
 
+                /* This is initialization information , it contains name , avatar ,friendList and so on.
+                * Initialization information is a user object.
+                * */
                 if (o instanceof User) {
                     user = (User) o;
                     Thread indexThread = thread.getThreadByName("JavaFX Application Thread");
                     indexThread.interrupt();
                 } else if (o instanceof Message) {
                     Message message = (Message) o;
+                    //Normal message type.
                     if (message.getMesType().equals("common_Message")){
                         String sender = message.getSender();
+
+                        //Put the message into the corresponding message box (TextArea).
                         TextArea chat = manageObject.getChat(sender);
                         chat.appendText(sender + " say: \n");
                         chat.appendText(message.getCon() + "\n" + "\n");
 
+                        // Display unread message.
                         Label unread = manageObject.getLabel(message.getSender());
                         Platform.runLater(new Runnable() {
                             @Override
@@ -63,9 +72,11 @@ public class ClientConServerThread extends Thread{
                         });
 
                     } else if (message.getMesType().equals("search_Friend")) {
+                        //Search Friend type.
                         System.out.println(message.getUserInfo().getAccount());
                         String account = message.getUserInfo().getAccount();
 
+                        //put the inquireResult into the corresponding AnchorPane.
                         AnchorPane inquireResult = (AnchorPane)manageObject.getObject("inquireResult");
                         Label friendId = (Label) inquireResult.getChildren().get(1);
 
@@ -78,6 +89,7 @@ public class ClientConServerThread extends Thread{
                         });
 
                     } else if (message.getMesType().equals("add_Result")) {
+                        //Add friend result type, Server will return a message which contain whether successful adding friend.
                         IndexView indexView = (IndexView)manageObject.getObject("indexView");
                         Thread indexThread = thread.getThreadByName("JavaFX Application Thread");
 
@@ -92,6 +104,7 @@ public class ClientConServerThread extends Thread{
 
 
                     } else if (message.getMesType().equals("change_Result")) {
+                        //Change name type.
                         IndexView indexView = (IndexView)manageObject.getObject("indexView");
                         Thread indexThread = thread.getThreadByName("JavaFX Application Thread");
                         if(message.getCon().equals("OK")){
@@ -102,6 +115,7 @@ public class ClientConServerThread extends Thread{
                         indexThread.interrupt();
                         System.out.println("success to change name");
                     } else if (message.getMesType().equals("change_Avatar_Result")) {
+                        //Change avatar type.
                         IndexView indexView = (IndexView)manageObject.getObject("indexView");
                         Thread indexThread = thread.getThreadByName("JavaFX Application Thread");
                         if(message.getCon().equals("OK")){
@@ -112,15 +126,16 @@ public class ClientConServerThread extends Thread{
                         System.out.println("success to change Avatar");
 
                     } else if (message.getMesType().equals("group_message")){
+                        // Group message type , it used to get group message.
                         String con = message.getCon();
                         String sender = message.getSender();
                         String name = message.getGetter();
-                        System.out.println(con + sender + name);
 
                         TextArea chat = manageObject.getChat(name);
                         chat.appendText(sender + " say: \n");
                         chat.appendText(con + "\n" + "\n");
 
+                        //Display group unread message.
                         Label unread = manageObject.getLabel(message.getGroup().getGroupName());
                         Platform.runLater(new Runnable() {
                             @Override
@@ -150,6 +165,10 @@ public class ClientConServerThread extends Thread{
         }
     }
 
+    /**
+     * Send message to Server.
+     * @param message message object send to Server.
+     */
     public void sendToServer(Message message){
         try {
             ObjectOutputStream oos = new ObjectOutputStream(clientUser.socket.getOutputStream());

@@ -5,6 +5,9 @@ import javafx.scene.control.TextArea;
 
 import java.util.*;
 
+/**
+ * A tool class that facilitates calling objects.
+ */
 public class manageObject {
 
     //manage friend chat Interface

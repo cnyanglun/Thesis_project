@@ -54,7 +54,9 @@ public class RegisterViewController implements Initializable {
 
     @FXML
     void actionRegister(ActionEvent event) throws IOException, InterruptedException {
+        //Get user input Information
         ri = new registerInfo(textAccount.getText(),textPassword.getText(),textEmail.getText());
+        //Connect Server
         clientUser = new clientUser();
         if(textAccount.getText().isEmpty() || textPassword.getText().isEmpty() || textEmail.getText().isEmpty()){
             Logger.info("The information is incomplete!");
