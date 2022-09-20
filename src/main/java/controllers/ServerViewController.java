@@ -15,8 +15,7 @@ public class ServerViewController {
 
     @FXML
     public void startServer(ActionEvent event) {
-//        ApplicationContext ac = new ClassPathXmlApplicationContext("ApplicationContext.xml");
-//        server = (MyServer) ac.getBean("server");
+        //new a MyServer Object which means open the Server
         server = new MyServer();
         thread1 = new Thread(server);
         thread1.start();

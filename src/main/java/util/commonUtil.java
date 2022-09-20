@@ -1,6 +1,13 @@
 package util;
 
 public class commonUtil {
+
+    /**
+     * A method to generate a new chat record name for database.
+     * @param s1 sender.
+     * @param s2 getter.
+     * @return the new name of chat_Record.
+     */
     public static String compareStrings(String s1, String s2) {
 
         int comparedResult = s1.compareTo(s2);

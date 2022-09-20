@@ -11,6 +11,9 @@ import java.util.List;
 import java.util.Set;
 
 @Repository
+/**
+ * Used to store or retrieve information in the database
+ */
 public class testRedis {
     private Jedis jedis;
 
@@ -30,8 +33,12 @@ public class testRedis {
         jedis.sadd("Accounts","default");
     }
 
+    /**
+     * To determine if the account existed
+     * @param account is user accountId
+     * @return true is exist , false is not exist
+     */
     public boolean isAccountExist(String account){
-//        Logger.info("Determine if the account existed.......");
         if(jedis.sismember("Accounts",account)){
             Logger.info("The account has been existed!!");
             return true;
@@ -42,6 +49,12 @@ public class testRedis {
         }
     }
 
+    /**
+     * A method to create a new account
+     * @param account the account id which input by user
+     * @param password the password which input by user
+     * @param email the email which input by user
+     */
     public void accountRegister(String account,String password , String email){
 
         jedis.sadd("Accounts",account);
@@ -51,6 +64,12 @@ public class testRedis {
         Logger.info("The account has been added to database!");
     }
 
+    /**
+     * To determine if the user login successfully
+     * @param account the account id which input by user
+     * @param password the password which input by user
+     * @return true means successful login , false means failure
+     */
     public boolean accountLogin(String account ,String password){
         try{
             if(jedis.hget(account + "_password",account).equals(password)){
@@ -64,6 +83,12 @@ public class testRedis {
         }
     }
 
+    /**
+     * A method to store the chat history Record into database
+     * @param sender is the user who send this message
+     * @param getter is the user who should receive this message
+     * @param messageObject a message which has been unSerialize
+     */
     public void storeChatRecord(String sender, String getter , byte[] messageObject){
 //        String chatRecordName = commonUtil.compareStrings(sender,getter);
         String chatRecordName = commonUtil.compareStrings(sender,getter) + "_chatRecord";
@@ -75,9 +100,35 @@ public class testRedis {
         jedis.rpush(chatRecordName.getBytes(), messageObject);
     }
 
+    /**
+     * A method to get all the chat history Record from database
+     * @param sender
+     * @param getter
+     * @return a ArrayList<Message> which contains all the messages of these two users
+     */
+    public ArrayList<Message> getChatRecord(String sender,String getter){
+        String name = commonUtil.compareStrings(sender, getter);
+        var messageObject = name + "_chatRecord";
+        List<byte[]> messageList = jedis.lrange(messageObject.getBytes(), 0, -1);
+
+        ArrayList<Message> list = new ArrayList<>();
+        for (int i = 0; i < messageList.size(); i++) {
+            Message message = (Message)SerializeUtil.unSerialize(messageList.get(i));
+            list.add(message);
+        }
+
+        return list;
+    }
+
+    /**
+     * Add the group in database
+     * @param accountId is the user who in this group
+     * @param groupName is the group name
+     */
     public void storeGroup(String accountId ,String groupName){
         jedis.sadd(accountId + "_groupChatRecord" , groupName + "_group");
     }
+
     public void storeGroupChatRecord(String groupName , byte[] messageObject){
         jedis.rpush((groupName + "_group").getBytes() , messageObject);
     }
@@ -99,21 +150,11 @@ public class testRedis {
         return groups;
     }
 
-
-    public ArrayList<Message> getChatRecord(String sender,String getter){
-        String name = commonUtil.compareStrings(sender, getter);
-        var messageObject = name + "_chatRecord";
-        List<byte[]> messageList = jedis.lrange(messageObject.getBytes(), 0, -1);
-
-        ArrayList<Message> list = new ArrayList<>();
-        for (int i = 0; i < messageList.size(); i++) {
-            Message message = (Message)SerializeUtil.unSerialize(messageList.get(i));
-            list.add(message);
-        }
-
-        return list;
-    }
-
+    /**
+     * To store how many unread message this user has
+     * @param getter is who own unread message
+     * @param sender is who send this message
+     */
     public void storeUnread(String getter, String sender){
         if(jedis.sismember(getter + "_unreadMessage", sender + "_count")){
             jedis.incr(sender + "_count");
@@ -135,6 +176,11 @@ public class testRedis {
         return unreadCount;
     }
 
+    /**
+     * Add group in database
+     * @param account user accountId
+     * @param group group object
+     */
     public void storeGroup(String account, Group group){
         byte[] serialize = SerializeUtil.serialize(group);
         jedis.rpush((account + "_groupList").getBytes(),serialize);
@@ -151,11 +197,22 @@ public class testRedis {
         return groupList;
     }
 
+    /**
+     * Remove the unread count in database which has been seen
+     * @param sender
+     * @param getter
+     */
     public void clearUnread(String sender , String getter){
         jedis.srem(sender + "_unreadMessage", getter + "_count");
         jedis.del(getter + "_count");
     }
 
+    /**
+     * Add friend function
+     * @param senderId user who want to add other one
+     * @param getterId user who added by sender
+     * @return yes or no ,which mean whether success.
+     */
     public String addFriend(String senderId, String getterId){
 
         var a =jedis.sadd(senderId + "_friendList",getterId);
@@ -166,16 +223,33 @@ public class testRedis {
         return "NO  ";
     }
 
+    /**
+     * Change name function
+     * @param senderId user who want to change name.
+     * @param newName new name which user want to change.
+     * @return
+     */
     public String changeName(String senderId , String newName){
         String result = jedis.set(senderId + "_nickname", newName);
         return result;
     }
 
+    /**
+     * Change Avatar function
+     * @param senderId
+     * @param imageUrl
+     * @return
+     */
     public String changeAvatar(String senderId , String imageUrl){
         String result = jedis.set(senderId + "_avatar" , imageUrl);
         return result;
     }
 
+    /**
+     * Package all the information of the user,and send this user object to client.
+     * @param account accountId.
+     * @return a User object which contains all the information.
+     */
     public User returnUserInfo(String account){
         User user = new User();
         user.setAccount(account);
@@ -205,12 +279,12 @@ public class testRedis {
 
 
 
-    public static void main(String[] args) {
-        testRedis t = new testRedis();
-
-
-        t.getGroupChatRecord("a1");
-    }
+//    public static void main(String[] args) {
+//        testRedis t = new testRedis();
+//
+//
+//        t.getGroupChatRecord("a1");
+//    }
 
 
 }

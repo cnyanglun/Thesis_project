@@ -2,6 +2,9 @@ package util;
 
 import java.io.*;
 
+/**
+ * A tool used to serialize or unserialize a object.
+ */
 public class SerializeUtil {
     public static byte[] serialize(Object object) {
 
@@ -10,8 +13,6 @@ public class SerializeUtil {
         ByteArrayOutputStream baos = null;
 
         try {
-
-            //序列化
 
             baos = new ByteArrayOutputStream();
 

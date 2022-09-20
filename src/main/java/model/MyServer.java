@@ -17,22 +17,29 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 @Service
+/**
+ * The thread of server , Used to determine whether to login or register
+ */
 public class MyServer implements Runnable{
 
     private boolean isThreadFinish = false;
-//    @Autowired
-//    testRedis redis;
+
     testRedis redis = new testRedis();
 
-//    SerConClientThread serConClientThread;
-
     private String account;
+
     public MyServer(){
 
     }
 
+    /**
+     * A method to determine whether the user registration account is successful
+     * @param o is a registerInfo object , is the user information entered by user
+     * @return a boolean value , Whether the user registration account is successful
+     */
     private boolean isRegisterSuccess(Object o) {
         registerInfo ri = (registerInfo) o;
+        //To determine whether the account has existed
         if (redis.isAccountExist(ri.getAccount())) {
             return false;
         }
@@ -42,10 +49,15 @@ public class MyServer implements Runnable{
         }
     }
 
+    /**
+     * A method to determine whether the user login is successful
+     * @param o is a User object , it contains account and password which entered by user
+     * @return a boolean value , Whether the user login account is successful ,return false which means failed to login
+     */
     private boolean isLoginSuccess(Object o){
         User user = (User) o;
         account = user.getAccount();
-        Logger.info("Get new Account --> Account: " + user.getAccount() + " , Password: " + user.getPassword());
+        Logger.info("Get Account --> Account: " + user.getAccount() + " , Password: " + user.getPassword());
 
         if(redis.accountLogin(user.getAccount(), user.getPassword())){
             Logger.info("Success to Login!!!");
@@ -58,26 +70,30 @@ public class MyServer implements Runnable{
     }
 
     @Override
+    //Create a new thread for Server
     public void run() {
         try {
             Logger.info("Start Server, Port 9999");
+            //Create serverSocket , Configure the appropriate information
             ServerSocket ss = new ServerSocket(8888);
             while (!isThreadFinish) {
                 Socket socket = ss.accept();
-//                System.out.println(socket.getRemoteSocketAddress());
                 ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
                 ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-//                Message message = new Message();
                 Message message = Message.builder().build();
+                //Accept the information passed by client
                 Object o = ois.readObject();
 
+                //To determine whether the object is User or registerInfo
                 if(o instanceof User){
                     if (isLoginSuccess(o)) {
                         message.setMesType("loginSuccess");
                         oos.writeObject(message);
                         Logger.info("User " + account + " is online!");
 
+                        //if user login success, create a new thread for this user
                         SerConClientThread serConClientThread = new SerConClientThread(socket,account);
+                        //put this user to manageClientThread
                         manageClientThread.addClientThread(account,serConClientThread);
                         serConClientThread.start();
 
@@ -109,7 +125,4 @@ public class MyServer implements Runnable{
         }
     }
 
-    public void setThreadFinish(boolean isThreadFinish){
-        this.isThreadFinish = isThreadFinish;
-    }
 }

@@ -10,8 +10,15 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 @Service
+/**
+ * Thread for each user, after the user logs in successfully,
+ * the server will create a separate thread for the user.
+ */
 public class SerConClientThread extends Thread{
 
+    /**
+     * To get the socket which has created in MyServer
+     */
     private Socket socket;
     private String account;
     testRedis redis = new testRedis();
@@ -25,6 +32,9 @@ public class SerConClientThread extends Thread{
     @Override
     public void run() {
         try {
+            /**
+             * Pass a User object with all the information of this user
+             */
             ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
             oos.writeObject(redis.returnUserInfo(account));
 
@@ -32,8 +42,9 @@ public class SerConClientThread extends Thread{
                 InputStream inputStream = socket.getInputStream();
                 ObjectInputStream ois = new ObjectInputStream(inputStream);
 
+                // Accept the message come from client
                 Message message = (Message) ois.readObject();
-//                System.out.println(message.getMesType() + " " + message.getSender() + " " + message.getGetter() + " " + message.getCon());
+
                 if(message.getMesType().equals("common_Message")){
                     //Determine if the getter online
                     if(!manageClientThread.isClientOnline(message.getGetter())){
@@ -47,8 +58,11 @@ public class SerConClientThread extends Thread{
 
                         continue;
                     }
+
+                    // Get the recipient's thread
                     SerConClientThread clientThread = manageClientThread.getClientThread(message.getGetter());
                     ObjectOutputStream oos1 = new ObjectOutputStream(clientThread.socket.getOutputStream());
+                    // Transfer the message which send by sender to getter
                     oos1.writeObject(message);
                     Logger.info("The message has been transfer to " + message.getGetter() + "from " + message.getSender());
 
@@ -75,8 +89,9 @@ public class SerConClientThread extends Thread{
 
                     }
                 } else if (message.getMesType().equals("add_Friend")) {
+
+                    //add friend
                     String isAddSuccess = redis.addFriend(message.getSender(),message.getGetter());
-//                    Message message1 = new Message();
                     Message message1 = Message.builder().build();
                     message1.setMesType("add_Result");
                     message1.setCon(isAddSuccess);
@@ -93,7 +108,6 @@ public class SerConClientThread extends Thread{
 
                 } else if (message.getMesType().equals("change_NewName")) {
                     String result = redis.changeName(message.getSender(), message.getCon());
-//                    Message message1 = new Message();
                     Message message1 = Message.builder().build();
                     message1.setMesType("change_Result");
                     message1.setCon(result);
@@ -101,8 +115,8 @@ public class SerConClientThread extends Thread{
                     SerConClientThread clientThread = manageClientThread.getClientThread(message.getSender());
                     ObjectOutputStream oos4 = new ObjectOutputStream(clientThread.socket.getOutputStream());
                     oos4.writeObject(message1);
+
                 } else if (message.getMesType().equals("change_Avatar")) {
-                    System.out.println("shou dao");
                     String result = redis.changeAvatar(message.getSender(), message.getCon());
 
                     Message change_avatar_result = Message.builder()
@@ -114,12 +128,15 @@ public class SerConClientThread extends Thread{
                     ObjectOutputStream oos5 = new ObjectOutputStream(clientThread.socket.getOutputStream());
                     oos5.writeObject(change_avatar_result);
                     System.out.println("shou dao");
+
                 } else if (message.getMesType().equals("exit_Message")) {
                     Logger.info(account + " is offline");
                     manageClientThread.delClientThread(account);
                     break;
+
                 } else if (message.getMesType().equals("clear_Unread")) {
                     redis.clearUnread(message.getSender(),message.getGetter());
+
                 } else if (message.getMesType().equals("create_group")) {
                     String sender = message.getSender();
                     Group group = message.getGroup();
