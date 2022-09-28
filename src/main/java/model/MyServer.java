@@ -24,7 +24,7 @@ public class MyServer implements Runnable{
 
     private boolean isThreadFinish = false;
 
-    testRedis redis = new testRedis();
+    testRedis redis;
 
     private String account;
 
@@ -76,6 +76,7 @@ public class MyServer implements Runnable{
             Logger.info("Start Server, Port 9999");
             //Create serverSocket , Configure the appropriate information
             ServerSocket ss = new ServerSocket(8888);
+            redis = new testRedis();
             while (!isThreadFinish) {
                 Socket socket = ss.accept();
                 ObjectInputStream ois = new ObjectInputStream(socket.getInputStream());
@@ -92,7 +93,7 @@ public class MyServer implements Runnable{
                         Logger.info("User " + account + " is online!");
 
                         //if user login success, create a new thread for this user
-                        SerConClientThread serConClientThread = new SerConClientThread(socket,account);
+                        SerConClientThread serConClientThread = new SerConClientThread(socket,redis,account);
                         //put this user to manageClientThread
                         manageClientThread.addClientThread(account,serConClientThread);
                         serConClientThread.start();

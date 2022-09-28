@@ -21,12 +21,14 @@ public class SerConClientThread extends Thread{
      */
     private Socket socket;
     private String account;
-    testRedis redis = new testRedis();
+    private testRedis redis;
+//    testRedis redis = new testRedis();
 
 
-    public SerConClientThread(Socket socket, String account){
+    public SerConClientThread(Socket socket,testRedis redis, String account){
         this.socket = socket;
         this.account = account;
+        this.redis = redis;
     }
 
     @Override
@@ -36,7 +38,8 @@ public class SerConClientThread extends Thread{
              * Pass a User object with all the information of this user
              */
             ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
-            oos.writeObject(redis.returnUserInfo(account));
+            User userBasicInfo = redis.returnUserInfo(account);
+            oos.writeObject(userBasicInfo);
 
             while (true){
                 InputStream inputStream = socket.getInputStream();
@@ -69,6 +72,7 @@ public class SerConClientThread extends Thread{
                     //Store the chat Record
                     byte[] messageObject = SerializeUtil.serialize(message);
                     redis.storeChatRecord(message.getSender(), message.getGetter(),messageObject);
+                    redis.storeUnread(message.getGetter(),message.getSender());
 
                 } else if (message.getMesType().equals("search_Friend")) {
                     //The user who should be added
@@ -122,12 +126,12 @@ public class SerConClientThread extends Thread{
                     Message change_avatar_result = Message.builder()
                             .mesType("change_Avatar_Result")
                             .con(result).build();
-                    System.out.println("shou dao");
 
                     SerConClientThread clientThread = manageClientThread.getClientThread(message.getSender());
                     ObjectOutputStream oos5 = new ObjectOutputStream(clientThread.socket.getOutputStream());
                     oos5.writeObject(change_avatar_result);
-                    System.out.println("shou dao");
+
+                    Logger.info(message.getSender() + " Success to Change Avatar!");
 
                 } else if (message.getMesType().equals("exit_Message")) {
                     Logger.info(account + " is offline");
@@ -136,6 +140,9 @@ public class SerConClientThread extends Thread{
 
                 } else if (message.getMesType().equals("clear_Unread")) {
                     redis.clearUnread(message.getSender(),message.getGetter());
+
+                } else if (message.getMesType().equals("clear_GroupUnread")){
+                    redis.clearGroupUnread(message.getSender(),message.getGetter());
 
                 } else if (message.getMesType().equals("create_group")) {
                     String sender = message.getSender();
@@ -154,7 +161,7 @@ public class SerConClientThread extends Thread{
 
                     for (String member:memberList) {
                         if(!manageClientThread.isClientOnline(member)){
-                            redis.storeUnread(member,groupName);
+//                            redis.storeGroupUnread(member,groupName);
                             redis.storeGroup(member,groupName);
 
                             continue;
@@ -164,6 +171,7 @@ public class SerConClientThread extends Thread{
                         ObjectOutputStream oos1 = new ObjectOutputStream(clientThread.socket.getOutputStream());
                         oos1.writeObject(message);
 
+//                        redis.storeGroupUnread(member,groupName);
                         redis.storeGroup(member,groupName);
                     }
 

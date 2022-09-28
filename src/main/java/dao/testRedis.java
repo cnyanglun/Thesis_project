@@ -176,6 +176,15 @@ public class testRedis {
         return unreadCount;
     }
 
+//    public void storeGroupUnread(String getter, String sender){
+//        if(jedis.sismember(getter + "_unreadMessage", getter + sender + "_count")){
+//            jedis.incr(getter + sender + "_count");
+//        }else {
+//            jedis.sadd(getter + "_unreadMessage",getter + sender + "_count");
+//            jedis.set(getter + sender + "_count","1");
+//        }
+//    }
+
     /**
      * Add group in database
      * @param account user accountId
@@ -205,6 +214,11 @@ public class testRedis {
     public void clearUnread(String sender , String getter){
         jedis.srem(sender + "_unreadMessage", getter + "_count");
         jedis.del(getter + "_count");
+    }
+
+    public void clearGroupUnread(String sender , String getter){
+        jedis.srem(sender + "_unreadMessage", sender + getter + "_count");
+        jedis.del(sender + getter + "_count");
     }
 
     /**
