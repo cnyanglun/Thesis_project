@@ -124,6 +124,7 @@ public class IndexView implements Initializable{
             Logger.info("Your information is not perfect");
         }
 
+        // Obtain the object of ClientConServerThread
         ClientConServerThread clientConServerThread = (ClientConServerThread) manageObject.getObject("clientConServerThread");
         ccst = clientConServerThread;
 
@@ -439,7 +440,7 @@ public class IndexView implements Initializable{
                 sp.setContent(displayText);
 
                 unreadCount.setText(" ");
-                Message clear_unread = Message.builder().mesType("clear_Unread").sender(userInfo.getAccount()).getter(name).build();
+//                Message clear_unread = Message.builder().mesType("clear_GroupUnread").sender(userInfo.getAccount()).getter(name).build();
 //                ccst.sendToServer(clear_unread);
             }
         });
@@ -489,7 +490,7 @@ public class IndexView implements Initializable{
 //                            message.setMesType("search_Friend");
 
 
-
+                            //
                             long count = displayResult.getChildren().stream().count();
                             int count1 = Integer.parseInt(String.valueOf(count));
                             if(count1 != 0){
@@ -504,49 +505,52 @@ public class IndexView implements Initializable{
                             friend.setPadding(new Insets(5));
                             ImageView pic = new ImageView(new Image("/image/image.jpg",80,80,false,false));
                             friend.resize(200,90);
-                            Label friendId = new Label();
+                            Label friendIdLabel = new Label();
                             Label friendName = new Label();
-                            AnchorPane.setRightAnchor(friendId,5.0);
-                            AnchorPane.setTopAnchor(friendId,10.0);
+                            AnchorPane.setRightAnchor(friendIdLabel,5.0);
+                            AnchorPane.setTopAnchor(friendIdLabel,10.0);
                             AnchorPane.setRightAnchor(friendName,5.0);
                             AnchorPane.setBottomAnchor(friendName,15.0);
-                            friend.getChildren().addAll(pic,friendId,friendName);
+                            friend.getChildren().addAll(pic, friendIdLabel,friendName);
                             Button addbtn = new Button("add");
 
                             addbtn.setOnMouseClicked(new EventHandler<MouseEvent>() {
                                 @Override
                                 public void handle(MouseEvent mouseEvent) {
 
-                                    String friendId = InputFriendName.getText();
+                                    String friendId = friendIdLabel.getText();
 
-                                    Message message1 = Message.builder()
-                                            .sender(userInfo.getAccount())
-                                            .mesType("add_Friend")
-                                            .getter(friendId).build();
+                                    if(!friendId.isEmpty()){
+                                        Message message1 = Message.builder()
+                                                .sender(userInfo.getAccount())
+                                                .mesType("add_Friend")
+                                                .getter(friendId).build();
 
-                                    ccst.sendToServer(message1);
+                                        ccst.sendToServer(message1);
 
-                                    Label result = new Label();
-                                    displayResult.getChildren().add(result);
+                                        Label result = new Label();
+                                        displayResult.getChildren().add(result);
 
-                                    try {
-                                        Thread.sleep(1000*60);
-                                    } catch (InterruptedException e) {
+                                        try {
+                                            Thread.sleep(1000*60);
+                                        } catch (InterruptedException e) {
 //                                            throw new RuntimeException(e);
-                                    }
+                                        }
 
-                                    if(isOk){
-                                        Logger.info("Success to Add");
-                                        result.setText("Success to Add");
+                                        if(isOk){
+                                            Logger.info("Success to Add");
+                                            result.setText("Success to Add");
 
-                                        //Create new friend and put it into friendList after adding friend
+                                            //Create new friend and put it into friendList after adding friend
 //                                        addFriendToFriendList(friendId);
-                                    }else {
-                                        Logger.info("Failed to add");
-                                        result.setText("Failed to add");
+                                        }else {
+                                            Logger.info("Failed to add");
+                                            result.setText("Failed to add");
+                                        }
+
+                                        refresh();
                                     }
 
-                                    refresh();
                                 }
                                 });
 
@@ -603,6 +607,7 @@ public class IndexView implements Initializable{
                 VBox vBox = new VBox();
 
                 HBox group = new HBox();
+                //switch the scence to win
                 win.setCenter(vBox);
                 group.setSpacing(20);
                 group.setPadding(new Insets(20));

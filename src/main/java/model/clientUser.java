@@ -47,7 +47,7 @@ public class clientUser {
             Message message = (Message) ois.readObject();
 
             if(message.getMesType().equals("loginSuccess")){
-                Logger.info("登录成功");
+                Logger.info("Success to Login!");
                 isSuccessLogin = true;
 
                 //Create a thread dedicated communication server
@@ -55,7 +55,7 @@ public class clientUser {
                 manageObject.addObject("clientConServerThread",clientConServerThread);
                 clientConServerThread.start();
             } else if (message.getMesType().equals("loginFailed")) {
-                Logger.info("登录失败");
+                Logger.info("Failed to Login!");
                 isSuccessLogin = false;
                 socket.close();
             }
