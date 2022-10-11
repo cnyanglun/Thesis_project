@@ -23,7 +23,7 @@ public class clientUser {
     public clientUser(){
         try {
             //Create socket and connect Server
-            socket = new Socket("2a02:ab88:2504:700:fd8e:3473:814c:4247",8888);
+            socket = new Socket("127.0.0.1",9999);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

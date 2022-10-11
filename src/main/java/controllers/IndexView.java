@@ -295,7 +295,7 @@ public class IndexView implements Initializable{
         for (User friend : userInfo.getFriendList()) {
             if(friend.getAccount().equals(friendId)){
                 for (Message message : friend.getChatRecord()) {
-                    chat.appendText(accountId.getText() + " say: \n" + message.getCon() + "\n" + "\n");
+                    chat.appendText(message.getSendTime() + " " + accountId.getText() + " say: \n" + message.getCon() + "\n" + "\n");
 
                 }
             }
@@ -777,7 +777,7 @@ public class IndexView implements Initializable{
 
                 inputText.clear();
 
-                displayText.appendText(accountId.getText() + " say: \n");
+                displayText.appendText(commonMessage.getSendTime() + " " + accountId.getText() + " say: \n");
                 displayText.appendText(content + "\n");
                 displayText.appendText("\n");
 
