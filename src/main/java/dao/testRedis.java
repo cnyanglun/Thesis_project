@@ -58,8 +58,12 @@ public class testRedis {
     public void accountRegister(String account,String password , String email){
 
         jedis.sadd("Accounts",account);
-        jedis.sadd(account,account + "_password",email,account + "_friendList",account + "_nickname",account + "_avatar",
-                account + "_chatRecord",account + "_unreadMessage",account + "_groupList",account + "_groupChatRecord");
+        jedis.sadd(account,account + "_password",email,
+                account + "_friendList",account + "_nickname",account + "_avatar",
+                account + "_chatRecord",account + "_unreadMessage",
+                account + "_groupList",account + "_groupChatRecord");
+
+
         jedis.hset(account + "_password",account,password);
         Logger.info("The account has been added to database!");
     }

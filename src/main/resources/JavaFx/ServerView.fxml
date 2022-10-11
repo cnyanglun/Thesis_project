@@ -8,7 +8,6 @@
       <Pane prefHeight="131.0" prefWidth="302.0">
          <children>
             <Button layoutX="32.0" layoutY="86.0" mnemonicParsing="false" onAction="#startServer" prefHeight="31.0" prefWidth="99.0" text="Start Server" />
-            <Button layoutX="173.0" layoutY="86.0" mnemonicParsing="false" onAction="#turnOffServer" prefHeight="31.0" prefWidth="99.0" text="Turn off" />
             <Label layoutX="70.0" layoutY="26.0" prefHeight="31.0" prefWidth="263.0" text="CHAT APPLICATION SERVER" />
          </children>
       </Pane>
