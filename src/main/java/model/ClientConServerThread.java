@@ -53,7 +53,7 @@ public class ClientConServerThread extends Thread{
 
                         //Put the message into the corresponding message box (TextArea).
                         TextArea chat = manageObject.getChat(sender);
-                        chat.appendText(sender + " say: \n");
+                        chat.appendText(message.getSendTime() + " " + sender + " say: \n");
                         chat.appendText(message.getCon() + "\n" + "\n");
 
                         // Display unread message.
@@ -132,7 +132,7 @@ public class ClientConServerThread extends Thread{
                         String name = message.getGetter();
 
                         TextArea chat = manageObject.getChat(name);
-                        chat.appendText(sender + " say: \n");
+                        chat.appendText(message.getSendTime() + " " + sender + " say: \n");
                         chat.appendText(con + "\n" + "\n");
 
                         //Display group unread message.

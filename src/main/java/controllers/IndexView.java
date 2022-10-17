@@ -750,11 +750,15 @@ public class IndexView implements Initializable{
                         .group(group1)
                         .getterList(group1.getMemberName()).build();
 
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss a");
+                String time = sdf.format(new Date());
+                group_message.setSendTime(time);
+
                 ccst.sendToServer(group_message);
 
                 inputText.clear();
 
-                displayText.appendText(accountId.getText() + " say: \n");
+                displayText.appendText(group_message.getSendTime() + " " + accountId.getText() + " say: \n");
                 displayText.appendText(content + "\n");
                 displayText.appendText("\n");
 

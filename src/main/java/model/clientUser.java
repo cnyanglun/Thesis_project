@@ -1,6 +1,5 @@
 package model;
 
-import org.springframework.stereotype.Component;
 import org.tinylog.Logger;
 import util.Message;
 import util.User;
@@ -10,7 +9,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.HashMap;
 
 /**
  * Send login and registration requests to the server.
@@ -23,7 +21,7 @@ public class clientUser {
     public clientUser(){
         try {
             //Create socket and connect Server
-            socket = new Socket("127.0.0.1",9999);
+            socket = new Socket("127.0.0.1",8888);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -74,7 +72,7 @@ public class clientUser {
      * @return a boolean to determine whether registration is successful.
      */
     public boolean sendRegisterInfo(Object o){
-        boolean isSuccessLogin = false;
+        boolean isSuccessRegister = false;
         try {
             ObjectOutputStream oos = new ObjectOutputStream(socket.getOutputStream());
             oos.writeObject(o);
@@ -83,10 +81,10 @@ public class clientUser {
             Message message = (Message) ois.readObject();
 
             if (message.getMesType().equals("registerSuccess")) {
-                isSuccessLogin = true;
+                isSuccessRegister = true;
             }
             else if(message.getMesType().equals("registerFailed")) {
-                isSuccessLogin = false;
+                isSuccessRegister = false;
                 socket.close();
             }
 
@@ -98,7 +96,7 @@ public class clientUser {
             throw new RuntimeException(e);
         }
 
-        return isSuccessLogin;
+        return isSuccessRegister;
     }
 
 }
