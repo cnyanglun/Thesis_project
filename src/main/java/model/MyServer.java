@@ -73,9 +73,9 @@ public class MyServer implements Runnable{
     //Create a new thread for Server
     public void run() {
         try {
-            Logger.info("Start Server, Port 9999");
+            Logger.info("Start Server, Port 8888");
             //Create serverSocket , Configure the appropriate information
-            ServerSocket ss = new ServerSocket(9999);
+            ServerSocket ss = new ServerSocket(8888);
             redis = new testRedis();
             while (!isThreadFinish) {
                 Socket socket = ss.accept();

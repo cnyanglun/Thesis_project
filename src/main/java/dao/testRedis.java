@@ -160,11 +160,12 @@ public class testRedis {
      * @param sender is who send this message
      */
     public void storeUnread(String getter, String sender){
-        if(jedis.sismember(getter + "_unreadMessage", sender + "_count")){
-            jedis.incr(sender + "_count");
+        String whoseUnread = getter + "_" + sender + "_count";
+        if(jedis.sismember(getter + "_unreadMessage", whoseUnread)){
+            jedis.incr(whoseUnread);
         }else {
-            jedis.sadd(getter + "_unreadMessage",sender + "_count");
-            jedis.set(sender + "_count","1");
+            jedis.sadd(getter + "_unreadMessage",whoseUnread);
+            jedis.set(whoseUnread,"1");
         }
     }
 
@@ -173,7 +174,7 @@ public class testRedis {
         HashMap<String , Integer> unreadCount = new HashMap<>();
         for (String element : jedis.smembers(account + "_unreadMessage")) {
             int count = Integer.parseInt(jedis.get(element));
-            element = element.substring(0,element.length()-6);
+            element = element.substring(account.length()+1,element.length()-6);
             unreadCount.put(element,count);
         }
 //        System.out.println(unreadCount);
@@ -216,8 +217,8 @@ public class testRedis {
      * @param getter
      */
     public void clearUnread(String sender , String getter){
-        jedis.srem(sender + "_unreadMessage", getter + "_count");
-        jedis.del(getter + "_count");
+        jedis.srem(sender + "_unreadMessage", sender + "_" + getter + "_count");
+        jedis.del(sender + "_" + "_count");
     }
 
     public void clearGroupUnread(String sender , String getter){
